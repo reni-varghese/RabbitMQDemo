@@ -1,0 +1,34 @@
+<div class="container">
+    <h3 class="text-primary">Login</h3>
+    <form class="col-4" [formGroup]="loginForm" (ngSubmit)="handleLogin()">
+    <div class="mb-3">
+        <label class="fw-bold">Email</label>
+        <input type="text" class="form-control border-dark" formControlName="email">
+        <div>
+            @if(loginForm.controls["email"].dirty || loginForm.controls["email"].touched){
+                @if(loginForm.controls["email"].errors?.["required"]){
+                    <span>Email is required</span>
+                }
+            }
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="fw-bold">Password</label>
+        <input type="password" class="form-control border-dark" formControlName="password">
+         <div>
+            @if(loginForm.controls["password"].dirty || loginForm.controls["password"].touched){
+                @if(loginForm.controls["password"].errors?.["required"]){
+                    <span>Password is required</span>
+                }
+            }
+        </div>
+    </div>
+    <div class="d-flex">
+        <button class="btn btn-primary w-100">Login</button>
+    </div>
+    </form>
+    <div class="text-danger">
+
+        {{errorMessage()}}
+    </div>
+</div>

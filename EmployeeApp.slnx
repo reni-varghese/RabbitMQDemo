@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="EmployeeApp.Api/EmployeeApp.Api.csproj" />
+  <Project Path="EmployeeApp.NgClient/EmployeeApp.NgClient.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="EmployeeApp.Shared/EmployeeApp.Shared.csproj" Id="addb1685-ea65-4edc-8523-8534eed8042f" />
+  <Project Path="EmployeeClient/EmployeeClient.csproj" Id="b6d49d22-6785-471f-be82-113cbccd5bad" />
+</Solution>

@@ -1,0 +1,56 @@
+﻿@page "/login"
+
+@inject CustomAuthStateProvider AuthStateProvider
+
+@inject NavigationManager Nav
+
+
+
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<h3 class="text-primary">Login</h3>
+
+<div class="col-4">
+    <EditForm Model="LoginRequest" OnValidSubmit="HandleLogin">
+        <div class="mb-2">
+            <label class="fw-bold">Email</label>
+            <InputText class="form-control border-dark" @bind-Value="LoginRequest.Email"/>
+            <ValidationMessage For="()=>LoginRequest.Email"/>
+        </div>
+        <div class="mb-2">
+            <label class="fw-bold">Password</label>
+            <InputText type="password" class="form-control border-dark" @bind-Value="LoginRequest.Password"/>
+            <ValidationMessage For="()=>LoginRequest.Password"/>
+        </div>
+        <div>
+            <button class="btn btn-primary">Login</button>
+        </div>
+    </EditForm>
+</div>
+
+
+@code {
+    private LoginDto LoginRequest = new();
+
+    private async Task HandleLogin()
+    {
+        var response = await Http.PostAsJsonAsync("api/auth/login", LoginRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            var authResponse = await response.Content
+            .ReadFromJsonAsync<AuthResponse>();
+            await JS.InvokeVoidAsync
+            ("localStorage.setItem", "token", authResponse!.AccessToken);
+
+            AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
+            Nav.NavigateTo("/");
+            Console.WriteLine("User Logged in successfully");
+
+        }
+        else
+        {
+            Console.WriteLine("Invalid Credentials");
+        }
+    }
+}

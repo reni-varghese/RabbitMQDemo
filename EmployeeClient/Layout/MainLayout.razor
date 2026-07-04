@@ -1,0 +1,65 @@
+﻿@inherits LayoutComponentBase
+
+@inject IJSRuntime JS
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Nav
+
+
+<div>
+
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand" href="">Employee App</a>
+        <ul class="navbar-nav">
+            <AuthorizeView>
+                <Authorized>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="employees">Employee List</NavLink>
+                    </li>
+
+                    <AuthorizeView Roles="Admin">
+                        <Authorized Context="AdminContext">
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="add">Add Employee</NavLink>
+                            </li>
+                        </Authorized>
+                    </AuthorizeView>
+
+                  
+                  
+                    <li class="nav-item">
+                        <button class="btn btn-link nav-link" @onclick="HandleLogout">Logout</button>
+                    </li>
+                </Authorized>
+                <NotAuthorized>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="login">Login</NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="register">Register</NavLink>
+
+                    </li>
+                </NotAuthorized>
+            </AuthorizeView>
+        </ul>
+    </nav>
+
+    <main>
+        @* <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div> *@
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+
+    private async Task HandleLogout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+        AuthStateProvider.NotifyUserLoggedOut();
+        Nav.NavigateTo("login");
+    }
+}

@@ -1,0 +1,82 @@
+﻿@page "/employees"
+@using System.Net.Http.Headers
+
+@inject HttpClient Http
+
+@inject IJSRuntime Js
+
+
+
+
+
+<h3 class="text-primary">Employees</h3>
+@if (EmployeeList is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Employee id</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Salary</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var emp in EmployeeList)
+            {
+                <tr>
+                    <td>@emp.Id</td>
+                    <td>@emp.Name</td>
+                    <td>@emp.Gender</td>
+                    <td>@emp.Age</td>
+                    <td>@emp.Salary</td>
+                    <td>
+                        <AuthorizeView Roles="User,Admin">
+                            <Authorized Context="editContext">
+                                <NavLink class="btn btn-outline-primary" href="@($"edit/{emp.Id}")">Edit</NavLink>
+                            </Authorized>
+                           
+                        </AuthorizeView>
+                     <AuthorizeView Roles="Admin">
+                         <Authorized Context="deleteContext">
+                                <button class="btn btn-outline-danger" @onclick="() => HandleDelete(emp.Id)">Delete</button>
+                         </Authorized>
+                     </AuthorizeView>
+                       
+                      
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+
+    List<EmployeeDto>? EmployeeList;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var token =await Js.InvokeAsync<string>("localStorage.getItem", "token");
+        Http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+
+        EmployeeList = await Http.GetFromJsonAsync<List<EmployeeDto>>("api/employees") ?? new();
+
+    }
+
+    private Task HandleDelete(int id)
+    {
+        return null;
+    }
+
+}

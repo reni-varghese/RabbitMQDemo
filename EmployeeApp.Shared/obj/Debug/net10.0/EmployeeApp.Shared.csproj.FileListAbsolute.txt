@@ -1,0 +1,12 @@
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.AssemblyInfoInputs.cache
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.AssemblyInfo.cs
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.csproj.CoreCompileInputs.cache
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.sourcelink.json
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\bin\Debug\net10.0\EmployeeApp.Shared.deps.json
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\bin\Debug\net10.0\EmployeeApp.Shared.dll
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\bin\Debug\net10.0\EmployeeApp.Shared.pdb
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.dll
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\refint\EmployeeApp.Shared.dll
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\EmployeeApp.Shared.pdb
+C:\reni\Test\EmployeeApp\EmployeeApp.Shared\obj\Debug\net10.0\ref\EmployeeApp.Shared.dll

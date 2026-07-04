@@ -1,0 +1,57 @@
+﻿@page "/register"
+@inject HttpClient Http
+
+@inject NavigationManager Nav
+<h3 class="text-primary">Register</h3>
+
+<div class="col-4">
+    <EditForm Model="RegisterRequest" OnValidSubmit="HandleRegister">
+        <div class="mb-2">
+            <label class="fw-bold">Email</label>
+            <InputText class="form-control border-dark" @bind-Value="RegisterRequest.Email" />
+            <ValidationMessage For="() => RegisterRequest.Email" />
+        </div>
+        <div class="mb-2">
+            <label class="fw-bold">Password</label>
+            <InputText type="password" class="form-control border-dark" @bind-Value="RegisterRequest.Password" />
+            <ValidationMessage For="() => RegisterRequest.Password" />
+        </div>
+        <div class="mb-2">
+            <label class="fw-bold">Confirm Password</label>
+            <InputText type="password" class="form-control border-dark" @bind-Value="RegisterRequest.ConfirmPassword" />
+            <ValidationMessage For="() => RegisterRequest.ConfirmPassword" />
+        </div>
+        <div class="mb-2">
+            <InputSelect class="form-control border-dark" @bind-Value="RegisterRequest.Role">
+
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+
+            </InputSelect>
+            <ValidationMessage For="()=>RegisterRequest.Role"/>
+        </div>
+
+        <div>
+            <button class="btn btn-primary">Register</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private RegisterDto RegisterRequest=new();
+
+    private async Task HandleRegister()
+    {
+        var response =await Http.PostAsJsonAsync("api/auth/register", RegisterRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("User Registered Successfully");
+
+            Nav.NavigateTo("login");
+        }
+        else
+        {
+            Console.WriteLine("Registration Failed");
+        }
+    }
+}

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RabbitMQ + Hosted Service - Step by Step Guide</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #222; line-height: 1.7; }
+  h1 { color: #6d1f00; border-bottom: 3px solid #6d1f00; padding-bottom: 10px; }
+  h2 { color: #6d1f00; margin-top: 40px; border-left: 5px solid #6d1f00; padding-left: 12px; }
+  h3 { color: #2e7d32; margin-top: 24px; }
+  h4 { color: #555; margin-top: 14px; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'Consolas', 'Courier New', monospace; }
+  .keyword  { color: #569cd6; }
+  .string   { color: #ce9178; }
+  .comment  { color: #6a9955; font-style: italic; }
+  .type     { color: #4ec9b0; }
+  .step-box { background: #fff3e0; border: 1px solid #ff8f00; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
+  .purpose  { background: #fff8e1; border-left: 4px solid #f9a825; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  .warning  { background: #fce4ec; border-left: 4px solid #e53935; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  .tip      { background: #e8f5e9; border-left: 4px solid #43a047; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  .concept  { background: #e3f2fd; border-left: 4px solid #1565c0; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th { background: #6d1f00; color: white; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #ccc; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f9f9f9; }
+  .toc { background: #f9f9f9; border: 1px solid #ddd; padding: 16px 24px; border-radius: 6px; display: inline-block; min-width: 360px; }
+  .toc li { margin: 5px 0; }
+  .toc a { color: #6d1f00; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .line-exp { margin: 6px 0 6px 20px; }
+  .line-exp span.lc { font-family: Consolas, monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 12.5px; color: #c7254e; }
+  .arch-box { background: #f3f3f3; border: 1px solid #ccc; border-radius: 8px; padding: 20px; font-family: Consolas, monospace; font-size: 13px; line-height: 2; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 30px 0; }
+  @media print { body { margin: 20px; } pre { font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<h1>&#127992; RabbitMQ + Hosted Service Integration</h1>
+<h3 style="color:#555;font-weight:normal">Step-by-Step Training Guide — EmployeeApp (.NET 10)</h3>
+<p><strong>Framework:</strong> .NET 10 &nbsp;|&nbsp; <strong>Broker:</strong> RabbitMQ &nbsp;|&nbsp; <strong>Pattern:</strong> Publisher / Consumer</p>
+
+<hr/>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <strong>&#128196; Table of Contents</strong>
+  <ol>
+    <li><a href="#concepts">Key Concepts Explained</a></li>
+    <li><a href="#scenario">The Demo Scenario</a></li>
+    <li><a href="#arch">Architecture Overview</a></li>
+    <li><a href="#step1">Step 1: Prerequisites</a></li>
+    <li><a href="#step2">Step 2: appsettings.json Configuration</a></li>
+    <li><a href="#step3">Step 3: Create EmployeeEvent Model</a></li>
+    <li><a href="#step4">Step 4: Create RabbitMQPublisher Service</a></li>
+    <li><a href="#step5">Step 5: Register Publisher in Program.cs</a></li>
+    <li><a href="#step6">Step 6: Update EmployeeService (Publish Events)</a></li>
+    <li><a href="#step7">Step 7: Create EmployeeEventConsumer (Hosted Service)</a></li>
+    <li><a href="#step8">Step 8: Register Hosted Service in Program.cs</a></li>
+    <li><a href="#step9">Step 9: Test the Complete Flow</a></li>
+  </ol>
+</div>
+
+<hr/>
+
+<!-- KEY CONCEPTS -->
+<h2 id="concepts">&#128161; Key Concepts Explained</h2>
+
+<h3>What is a Message Broker?</h3>
+<div class="concept">
+  A <strong>Message Broker</strong> is a middleman between two services. Instead of Service A calling Service B directly, Service A sends a message to the broker, and Service B picks it up when ready.<br/><br/>
+  <strong>Analogy:</strong> Think of it like a <strong>post office</strong>:
+  <ul>
+    <li>The sender (Publisher) drops a letter in the mailbox</li>
+    <li>The post office (RabbitMQ) stores and routes the letter</li>
+    <li>The receiver (Consumer) picks it up when available</li>
+    <li>The sender doesn't wait for the receiver — they're <strong>decoupled</strong></li>
+  </ul>
+</div>
+
+<h3>What is RabbitMQ?</h3>
+<div class="concept">
+  <strong>RabbitMQ</strong> is one of the most popular open-source message brokers. Key terms:
+  <table>
+    <tr><th>Term</th><th>Meaning</th><th>Analogy</th></tr>
+    <tr><td><strong>Producer/Publisher</strong></td><td>Sends messages to RabbitMQ</td><td>Person dropping a letter</td></tr>
+    <tr><td><strong>Queue</strong></td><td>A buffer where messages wait to be consumed</td><td>Mailbox</td></tr>
+    <tr><td><strong>Consumer</strong></td><td>Reads and processes messages from the queue</td><td>Postman delivering letters</td></tr>
+    <tr><td><strong>Exchange</strong></td><td>Routes messages to the right queue</td><td>Post office sorting department</td></tr>
+    <tr><td><strong>Binding</strong></td><td>Connection between exchange and queue</td><td>Delivery route</td></tr>
+    <tr><td><strong>Channel</strong></td><td>Lightweight connection inside the main connection</td><td>A lane in a highway</td></tr>
+  </table>
+</div>
+
+<h3>What is a Hosted Service?</h3>
+<div class="concept">
+  A <strong>Hosted Service</strong> (BackgroundService) in .NET is a class that runs in the <strong>background</strong> for the lifetime of the application.<br/><br/>
+  <strong>Analogy:</strong> Think of it like a <strong>security guard</strong> who works 24/7 in the background — always listening, always ready to act, never blocking the main entrance (the API).
+  <table>
+    <tr><th>Feature</th><th>Description</th></tr>
+    <tr><td>Runs automatically</td><td>Starts when app starts, stops when app stops</td></tr>
+    <tr><td>Non-blocking</td><td>Runs on a separate thread — doesn't affect API performance</td></tr>
+    <tr><td>Continuous</td><td>Can listen to queues, process jobs, run timers indefinitely</td></tr>
+    <tr><td>Base class</td><td>Inherit from <code>BackgroundService</code> and override <code>ExecuteAsync</code></td></tr>
+  </table>
+</div>
+
+<h3>Why combine RabbitMQ + Hosted Service?</h3>
+<div class="tip">
+  The <strong>Hosted Service IS the Consumer</strong>. It runs in the background, continuously listening to the RabbitMQ queue. When a message arrives, it wakes up and processes it — all without any impact on the main API.
+</div>
+
+<hr/>
+
+<!-- SCENARIO -->
+<h2 id="scenario">&#127916; The Demo Scenario</h2>
+
+<div class="purpose">
+  <strong>What we are building:</strong><br/><br/>
+  When an <strong>Employee is Created or Deleted</strong> via the API:
+  <ol>
+    <li>The <code>EmployeeService</code> publishes an <strong>EmployeeEvent</strong> message to RabbitMQ</li>
+    <li>The message travels through RabbitMQ and sits in a queue</li>
+    <li>The <strong>Hosted Service (Consumer)</strong> picks up the message</li>
+    <li>The consumer <strong>logs the event</strong> — simulating an audit trail or notification</li>
+  </ol>
+  This demonstrates <strong>event-driven architecture</strong> — the API doesn't wait for the consumer to finish. It fires the event and moves on.
+</div>
+
+<hr/>
+
+<!-- ARCHITECTURE -->
+<h2 id="arch">&#127968; Architecture Overview</h2>
+
+<div class="arch-box">
+HTTP Request (POST /api/employees)
+        ↓
+EmployeeController.Create()
+        ↓
+EmployeeService.AddAsync()  ─────────────────────────────────┐
+        ↓                                                     │ publishes event
+Returns EmployeeDto to client (API responds immediately)      ↓
+                                                    RabbitMQPublisher
+                                                              ↓
+                                                    RabbitMQ Queue
+                                                    "employee.events.Queue"
+                                                              ↓
+                                                    EmployeeEventConsumer
+                                                    (BackgroundService)
+                                                              ↓
+                                                    Processes message:
+                                                    Logs "Employee John Created"
+</div>
+
+<div class="tip">
+  &#128161; <strong>Key Point:</strong> The API returns a response to the client <strong>immediately</strong> after saving the employee to the database. The RabbitMQ publishing happens, but the API doesn't wait for the consumer to process it. This is <strong>asynchronous, non-blocking communication</strong>.
+</div>
+
+<hr/>
+
+<!-- STEP 1 -->
+<h2 id="step1">&#9312; Step 1: Prerequisites</h2>
+
+<h3>1a. Verify RabbitMQ is Running</h3>
+<p>Open browser and navigate to:</p>
+<pre><code>http://localhost:15672</code></pre>
+<p>Login with: <strong>Username:</strong> guest &nbsp; <strong>Password:</strong> guest</p>
+<p>You should see the RabbitMQ Management Dashboard. Note the <strong>Queues</strong> tab — it will be empty now but we'll see our queue appear after implementation.</p>
+
+<h3>1b. Install RabbitMQ.Client NuGet Package</h3>
+<p>In Package Manager Console:</p>
+<pre><code>Install-Package RabbitMQ.Client -ProjectName EmployeeApp.Api</code></pre>
+<p>Or via NuGet Package Manager UI → search <strong>RabbitMQ.Client</strong> → install in <strong>EmployeeApp.Api</strong>.</p>
+
+<hr/>
+
+<!-- STEP 2 -->
+<h2 id="step2">&#9313; Step 2: appsettings.json Configuration</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Store RabbitMQ connection settings in config — not hardcoded in code. This makes it easy to change for different environments (Dev, Staging, Production).
+</div>
+
+<h3>File: EmployeeApp.Api/appsettings.json</h3>
+<pre><code>{
+  <span class="string">"RabbitMq"</span>: {
+    <span class="string">"HostName"</span>:     <span class="string">"localhost"</span>,
+    <span class="string">"Port"</span>:         5672,
+    <span class="string">"UserName"</span>:     <span class="string">"guest"</span>,
+    <span class="string">"Password"</span>:     <span class="string">"guest"</span>,
+    <span class="string">"VirtualHost"</span>:  <span class="string">"/"</span>,
+    <span class="string">"EmployeeQueue"</span>: <span class="string">"employee.events.Queue"</span>
+  }
+}
+</code></pre>
+
+<h4>Line-by-Line Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="lc">HostName: "localhost"</span> — RabbitMQ server address. Use the server IP/hostname in production.</div>
+<div class="line-exp">&#x25B6; <span class="lc">Port: 5672</span> — Default AMQP port RabbitMQ listens on. (15672 is only for the management UI)</div>
+<div class="line-exp">&#x25B6; <span class="lc">UserName / Password: "guest"</span> — Default credentials. Change in production!</div>
+<div class="line-exp">&#x25B6; <span class="lc">VirtualHost: "/"</span> — RabbitMQ supports multiple virtual hosts for isolation. "/" is the default.</div>
+<div class="line-exp">&#x25B6; <span class="lc">EmployeeQueue: "employee.events.Queue"</span> — The name of the queue we'll create and use.</div>
+
+<hr/>
+
+<!-- STEP 3 -->
+<h2 id="step3">&#9314; Step 3: Create EmployeeEvent Model</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Define the shape of the message that travels through RabbitMQ. This is the data contract between the Publisher and Consumer.
+</div>
+
+<h3>File: EmployeeApp.Api/Events/EmployeeEvent.cs</h3>
+<pre><code><span class="keyword">namespace</span> EmployeeApp.Api.Events
+{
+    <span class="keyword">public class</span> <span class="type">EmployeeEvent</span>
+    {
+        <span class="keyword">public string</span> EventType { <span class="keyword">get</span>; <span class="keyword">set</span>; }     <span class="comment">// "Created" or "Deleted"</span>
+        <span class="keyword">public int</span>    EmployeeId { <span class="keyword">get</span>; <span class="keyword">set</span>; }     <span class="comment">// ID of the employee</span>
+        <span class="keyword">public string</span> EmployeeName { <span class="keyword">get</span>; <span class="keyword">set</span>; }   <span class="comment">// Name for human-readable log</span>
+        <span class="keyword">public</span> <span class="type">DateTime</span> OccurredAt { <span class="keyword">get</span>; <span class="keyword">set</span>; }  <span class="comment">// When the event happened</span>
+    }
+}
+</code></pre>
+
+<h4>Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="lc">EventType</span> — Tells the consumer WHAT happened. Examples: <code>"Created"</code>, <code>"Deleted"</code>, <code>"Updated"</code></div>
+<div class="line-exp">&#x25B6; <span class="lc">EmployeeId</span> — Identifies WHICH employee the event is about</div>
+<div class="line-exp">&#x25B6; <span class="lc">EmployeeName</span> — Included for readable log messages without extra DB lookups</div>
+<div class="line-exp">&#x25B6; <span class="lc">OccurredAt</span> — Timestamp for audit trail purposes</div>
+
+<div class="tip">&#128161; Think of <code>EmployeeEvent</code> as the <strong>letter inside the envelope</strong> — it's what the consumer reads after opening the message from the queue.</div>
+
+<hr/>
+
+<!-- STEP 4 -->
+<h2 id="step4">&#9315; Step 4: Create RabbitMQPublisher Service</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> A service responsible for connecting to RabbitMQ and sending messages. The EmployeeService will use this to publish events.
+</div>
+
+<h3>File: EmployeeApp.Api/Messaging/RabbitMQPublisher.cs</h3>
+<pre><code><span class="keyword">using</span> EmployeeApp.Api.Events;
+<span class="keyword">using</span> RabbitMQ.Client;
+<span class="keyword">using</span> System.Text;
+<span class="keyword">using</span> System.Text.Json;
+
+<span class="keyword">namespace</span> EmployeeApp.Api.Messaging
+{
+    <span class="keyword">public class</span> <span class="type">RabbitMQPublisher</span> : <span class="type">IDisposable</span>
+    {
+        <span class="keyword">private readonly</span> <span class="type">IConnection</span> _connection;
+        <span class="keyword">private readonly</span> <span class="type">IChannel</span>    _channel;
+        <span class="keyword">private readonly string</span>      _queueName;
+
+        <span class="keyword">public</span> RabbitMQPublisher(<span class="type">IConfiguration</span> config)
+        {
+            <span class="keyword">var</span> rabbitConfig = config.GetSection(<span class="string">"RabbitMq"</span>);
+
+            <span class="comment">// Step A: Configure the connection settings</span>
+            <span class="keyword">var</span> factory = <span class="keyword">new</span> <span class="type">ConnectionFactory</span>
+            {
+                HostName    = rabbitConfig[<span class="string">"HostName"</span>]!,
+                Port        = <span class="keyword">int</span>.Parse(rabbitConfig[<span class="string">"Port"</span>]!),
+                UserName    = rabbitConfig[<span class="string">"UserName"</span>]!,
+                Password    = rabbitConfig[<span class="string">"Password"</span>]!,
+                VirtualHost = rabbitConfig[<span class="string">"VirtualHost"</span>]!
+            };
+
+            _queueName  = rabbitConfig[<span class="string">"EmployeeQueue"</span>]!;
+
+            <span class="comment">// Step B: Open the connection and channel (synchronous in constructor)</span>
+            _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
+            _channel    = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+
+            <span class="comment">// Step C: Declare the queue — creates it in RabbitMQ if it doesn't exist</span>
+            _channel.QueueDeclareAsync(
+                queue:      _queueName,
+                durable:    <span class="keyword">true</span>,
+                exclusive:  <span class="keyword">false</span>,
+                autoDelete: <span class="keyword">false</span>,
+                arguments:  <span class="keyword">null</span>
+            ).GetAwaiter().GetResult();
+        }
+
+        <span class="comment">// Called by EmployeeService when an employee is created or deleted</span>
+        <span class="keyword">public async</span> <span class="type">Task</span> PublishAsync(<span class="type">EmployeeEvent</span> employeeEvent)
+        {
+            <span class="comment">// Serialize the event object to JSON string</span>
+            <span class="keyword">var</span> message = <span class="type">JsonSerializer</span>.Serialize(employeeEvent);
+
+            <span class="comment">// Convert JSON string to bytes (RabbitMQ works with raw bytes)</span>
+            <span class="keyword">var</span> body = <span class="type">Encoding</span>.UTF8.GetBytes(message);
+
+            <span class="comment">// Mark message as persistent — survives RabbitMQ restart</span>
+            <span class="keyword">var</span> properties = <span class="keyword">new</span> <span class="type">BasicProperties</span> { Persistent = <span class="keyword">true</span> };
+
+            <span class="comment">// Publish the message to the queue</span>
+            <span class="keyword">await</span> _channel.BasicPublishAsync(
+                exchange:        string.Empty,
+                routingKey:      _queueName,
+                mandatory:       <span class="keyword">false</span>,
+                basicProperties: properties,
+                body:            body
+            );
+        }
+
+        <span class="comment">// Properly close connections when service is disposed</span>
+        <span class="keyword">public void</span> Dispose()
+        {
+            _channel?.CloseAsync();
+            _connection?.CloseAsync();
+        }
+    }
+}
+</code></pre>
+
+<h4>Key Concept — Why GetAwaiter().GetResult() in constructor?</h4>
+<div class="warning">
+  &#9888; C# constructors <strong>cannot be async</strong>. They have no return type, so there's nowhere to return a <code>Task</code>.<br/><br/>
+  <code>GetAwaiter().GetResult()</code> is the workaround — it <strong>blocks the thread synchronously</strong> until the async operation completes. This is acceptable here because:
+  <ul>
+    <li>It runs only <strong>once at application startup</strong></li>
+    <li>The connection setup is <strong>very fast</strong></li>
+    <li>Without the connection, the object cannot function at all</li>
+  </ul>
+</div>
+
+<h4>QueueDeclareAsync Parameters Explained:</h4>
+<table>
+  <tr><th>Parameter</th><th>Value</th><th>Meaning</th></tr>
+  <tr><td>queue</td><td>"employee.events.Queue"</td><td>The name of the queue</td></tr>
+  <tr><td>durable</td><td>true</td><td>Queue survives RabbitMQ server restart</td></tr>
+  <tr><td>exclusive</td><td>false</td><td>Queue can be used by multiple connections</td></tr>
+  <tr><td>autoDelete</td><td>false</td><td>Queue does NOT delete itself when consumers disconnect</td></tr>
+  <tr><td>arguments</td><td>null</td><td>No extra configuration needed</td></tr>
+</table>
+
+<h4>PublishAsync Flow:</h4>
+<table>
+  <tr><th>Step</th><th>Code</th><th>What happens</th></tr>
+  <tr><td>1</td><td>JsonSerializer.Serialize</td><td>EmployeeEvent object → JSON string</td></tr>
+  <tr><td>2</td><td>Encoding.UTF8.GetBytes</td><td>JSON string → byte array</td></tr>
+  <tr><td>3</td><td>BasicProperties { Persistent=true }</td><td>Marks message as durable</td></tr>
+  <tr><td>4</td><td>BasicPublishAsync</td><td>Sends bytes to the queue</td></tr>
+</table>
+
+<hr/>
+
+<!-- STEP 5 -->
+<h2 id="step5">&#9316; Step 5: Register Publisher in Program.cs</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Register <code>RabbitMQPublisher</code> in the DI container so it can be injected into <code>EmployeeService</code>.
+</div>
+
+<h3>File: EmployeeApp.Api/Program.cs — add this line:</h3>
+<pre><code><span class="comment">// Register RabbitMQPublisher as Singleton — one instance shared for whole app lifetime</span>
+builder.Services.AddSingleton&lt;<span class="type">RabbitMQPublisher</span>&gt;();
+</code></pre>
+
+<div class="tip">
+  &#128161; <strong>Why Singleton?</strong>
+  <ul>
+    <li>Opening a RabbitMQ connection is <strong>expensive</strong> — we want to do it once</li>
+    <li>A single connection with multiple channels is the recommended RabbitMQ pattern</li>
+    <li>Scoped would create a new connection per HTTP request — wasteful</li>
+  </ul>
+</div>
+
+<hr/>
+
+<!-- STEP 6 -->
+<h2 id="step6">&#9317; Step 6: Update EmployeeService to Publish Events</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> After creating or deleting an employee, publish an event to RabbitMQ. The EmployeeService knows what happened — it's the right place to trigger the event.
+</div>
+
+<h3>File: EmployeeApp.Api/Services/EmployeeService.cs</h3>
+<pre><code><span class="keyword">using</span> EmployeeApp.Api.Events;
+<span class="keyword">using</span> EmployeeApp.Api.Messaging;
+
+<span class="keyword">public class</span> <span class="type">EmployeeService</span>(<span class="type">IEmployeeRepository</span> repository, <span class="type">IMapper</span> mapper,
+                              <span class="type">RabbitMQPublisher</span> publisher) : <span class="type">IEmployeeService</span>
+{
+    <span class="keyword">public async</span> <span class="type">Task</span>&lt;<span class="type">EmployeeDto</span>&gt; AddAsync(<span class="type">EmployeeDto</span> entity)
+    {
+        <span class="keyword">var</span> employee     = mapper.Map&lt;<span class="type">Employee</span>&gt;(entity);
+        <span class="keyword">var</span> savedEntity  = <span class="keyword">await</span> repository.CreateAsync(employee);
+        <span class="keyword">var</span> result       = mapper.Map&lt;<span class="type">EmployeeDto</span>&gt;(savedEntity);
+
+        <span class="comment">// Publish "Created" event to RabbitMQ after saving to DB</span>
+        <span class="keyword">await</span> publisher.PublishAsync(<span class="keyword">new</span> <span class="type">EmployeeEvent</span>
+        {
+            EventType    = <span class="string">"Created"</span>,
+            EmployeeId   = result.Id,
+            EmployeeName = result.Name,
+            OccurredAt   = <span class="type">DateTime</span>.UtcNow
+        });
+
+        <span class="keyword">return</span> result;
+    }
+
+    <span class="keyword">public async</span> <span class="type">Task</span>&lt;<span class="type">EmployeeDto</span>&gt; DeleteAsync(<span class="keyword">int</span> id)
+    {
+        <span class="keyword">var</span> deleted = <span class="keyword">await</span> repository.DeleteAsync(id);
+        <span class="keyword">var</span> result  = mapper.Map&lt;<span class="type">EmployeeDto</span>&gt;(deleted);
+
+        <span class="comment">// Publish "Deleted" event to RabbitMQ after deleting from DB</span>
+        <span class="keyword">await</span> publisher.PublishAsync(<span class="keyword">new</span> <span class="type">EmployeeEvent</span>
+        {
+            EventType    = <span class="string">"Deleted"</span>,
+            EmployeeId   = result.Id,
+            EmployeeName = result.Name,
+            OccurredAt   = <span class="type">DateTime</span>.UtcNow
+        });
+
+        <span class="keyword">return</span> result;
+    }
+
+    <span class="comment">// GetAllAsync and UpdateAsync remain unchanged...</span>
+}
+</code></pre>
+
+<h4>What changed:</h4>
+<div class="line-exp">&#x25B6; <span class="lc">RabbitMQPublisher publisher</span> — injected via constructor (Primary Constructor syntax)</div>
+<div class="line-exp">&#x25B6; <span class="lc">await publisher.PublishAsync(...)</span> — fires the event AFTER the DB operation succeeds</div>
+<div class="tip">&#128161; <strong>Important:</strong> We publish AFTER the database operation. If the DB save fails, no event is published. This ensures data consistency — we only notify when something actually happened.</div>
+
+<hr/>
+
+<!-- STEP 7 -->
+<h2 id="step7">&#9318; Step 7: Create EmployeeEventConsumer (Hosted Service)</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> A background service that runs for the entire lifetime of the application, continuously listening to the RabbitMQ queue and processing messages as they arrive.
+</div>
+
+<h3>File: EmployeeApp.Api/Messaging/EmployeeEventConsumer.cs</h3>
+<pre><code><span class="keyword">using</span> EmployeeApp.Api.Events;
+<span class="keyword">using</span> RabbitMQ.Client;
+<span class="keyword">using</span> RabbitMQ.Client.Events;
+<span class="keyword">using</span> System.Text;
+<span class="keyword">using</span> System.Text.Json;
+
+<span class="keyword">namespace</span> EmployeeApp.Api.Messaging
+{
+    <span class="comment">// BackgroundService is the base class for Hosted Services in .NET</span>
+    <span class="keyword">public class</span> <span class="type">EmployeeEventConsumer</span> : <span class="type">BackgroundService</span>
+    {
+        <span class="keyword">private readonly</span> <span class="type">ILogger</span>&lt;<span class="type">EmployeeEventConsumer</span>&gt; _logger;
+        <span class="keyword">private readonly</span> <span class="type">IConfiguration</span> _config;
+        <span class="keyword">private</span> <span class="type">IConnection</span>? _connection;
+        <span class="keyword">private</span> <span class="type">IChannel</span>?    _channel;
+
+        <span class="keyword">public</span> EmployeeEventConsumer(
+            <span class="type">ILogger</span>&lt;<span class="type">EmployeeEventConsumer</span>&gt; logger,
+            <span class="type">IConfiguration</span> config)
+        {
+            _logger = logger;
+            _config = config;
+        }
+
+        <span class="comment">// Called once when the Hosted Service starts</span>
+        <span class="keyword">public override async</span> <span class="type">Task</span> StartAsync(<span class="type">CancellationToken</span> cancellationToken)
+        {
+            <span class="keyword">var</span> rabbitConfig = _config.GetSection(<span class="string">"RabbitMq"</span>);
+
+            <span class="keyword">var</span> factory = <span class="keyword">new</span> <span class="type">ConnectionFactory</span>
+            {
+                HostName    = rabbitConfig[<span class="string">"HostName"</span>]!,
+                Port        = <span class="keyword">int</span>.Parse(rabbitConfig[<span class="string">"Port"</span>]!),
+                UserName    = rabbitConfig[<span class="string">"UserName"</span>]!,
+                Password    = rabbitConfig[<span class="string">"Password"</span>]!,
+                VirtualHost = rabbitConfig[<span class="string">"VirtualHost"</span>]!
+            };
+
+            _connection = <span class="keyword">await</span> factory.CreateConnectionAsync(cancellationToken);
+            _channel    = <span class="keyword">await</span> _connection.CreateChannelAsync(<span class="keyword">null</span>, cancellationToken);
+
+            _logger.LogInformation(<span class="string">"EmployeeEventConsumer started. Listening to queue..."</span>);
+
+            <span class="comment">// Call the base StartAsync which then calls ExecuteAsync</span>
+            <span class="keyword">await base</span>.StartAsync(cancellationToken);
+        }
+
+        <span class="comment">// The main loop — runs continuously in the background</span>
+        <span class="keyword">protected override async</span> <span class="type">Task</span> ExecuteAsync(<span class="type">CancellationToken</span> stoppingToken)
+        {
+            <span class="keyword">var</span> queueName = _config.GetSection(<span class="string">"RabbitMq"</span>)[<span class="string">"EmployeeQueue"</span>]!;
+
+            <span class="comment">// Declare the same queue — safe to declare multiple times, RabbitMQ ignores if exists</span>
+            <span class="keyword">await</span> _channel!.QueueDeclareAsync(
+                queue:      queueName,
+                durable:    <span class="keyword">true</span>,
+                exclusive:  <span class="keyword">false</span>,
+                autoDelete: <span class="keyword">false</span>,
+                arguments:  <span class="keyword">null</span>,
+                cancellationToken: stoppingToken);
+
+            <span class="comment">// Create a consumer that handles incoming messages</span>
+            <span class="keyword">var</span> consumer = <span class="keyword">new</span> <span class="type">AsyncEventingBasicConsumer</span>(_channel);
+
+            <span class="comment">// This event fires every time a new message arrives in the queue</span>
+            consumer.ReceivedAsync += <span class="keyword">async</span> (sender, eventArgs) =&gt;
+            {
+                <span class="comment">// Step 1: Read the raw bytes from the message</span>
+                <span class="keyword">var</span> body = eventArgs.Body.ToArray();
+
+                <span class="comment">// Step 2: Convert bytes back to JSON string</span>
+                <span class="keyword">var</span> message = <span class="type">Encoding</span>.UTF8.GetString(body);
+
+                <span class="comment">// Step 3: Deserialize JSON string back to EmployeeEvent object</span>
+                <span class="keyword">var</span> employeeEvent = <span class="type">JsonSerializer</span>.Deserialize&lt;<span class="type">EmployeeEvent</span>&gt;(message,
+                    <span class="keyword">new</span> <span class="type">JsonSerializerOptions</span> { PropertyNameCaseInsensitive = <span class="keyword">true</span> });
+
+                <span class="keyword">if</span> (employeeEvent != <span class="keyword">null</span>)
+                {
+                    <span class="comment">// Step 4: Process the event — here we just log it</span>
+                    _logger.LogInformation(
+                        <span class="string">"[AUDIT] Employee {EventType}: ID={Id}, Name={Name}, Time={Time}"</span>,
+                        employeeEvent.EventType,
+                        employeeEvent.EmployeeId,
+                        employeeEvent.EmployeeName,
+                        employeeEvent.OccurredAt);
+                }
+
+                <span class="comment">// Step 5: Acknowledge — tell RabbitMQ "I processed this, remove it from queue"</span>
+                <span class="keyword">await</span> _channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: <span class="keyword">false</span>);
+            };
+
+            <span class="comment">// Start consuming — tell RabbitMQ to send messages to this consumer</span>
+            <span class="keyword">await</span> _channel.BasicConsumeAsync(
+                queue:       queueName,
+                autoAck:     <span class="keyword">false</span>,  <span class="comment">// We manually acknowledge — more reliable</span>
+                consumer:    consumer,
+                cancellationToken: stoppingToken);
+
+            <span class="comment">// Keep running until the app stops (stoppingToken is cancelled)</span>
+            <span class="keyword">await</span> <span class="type">Task</span>.Delay(<span class="type">Timeout</span>.Infinite, stoppingToken);
+        }
+
+        <span class="comment">// Called when the app shuts down — clean up connections</span>
+        <span class="keyword">public override async</span> <span class="type">Task</span> StopAsync(<span class="type">CancellationToken</span> cancellationToken)
+        {
+            _logger.LogInformation(<span class="string">"EmployeeEventConsumer stopping..."</span>);
+            <span class="keyword">if</span> (_channel != <span class="keyword">null</span>) <span class="keyword">await</span> _channel.CloseAsync();
+            <span class="keyword">if</span> (_connection != <span class="keyword">null</span>) <span class="keyword">await</span> _connection.CloseAsync();
+            <span class="keyword">await base</span>.StopAsync(cancellationToken);
+        }
+    }
+}
+</code></pre>
+
+<h4>BackgroundService Lifecycle:</h4>
+<table>
+  <tr><th>Method</th><th>When Called</th><th>What We Do</th></tr>
+  <tr><td><strong>StartAsync</strong></td><td>Once when app starts</td><td>Connect to RabbitMQ, set up channel</td></tr>
+  <tr><td><strong>ExecuteAsync</strong></td><td>Runs continuously</td><td>Listen to queue, process messages forever</td></tr>
+  <tr><td><strong>StopAsync</strong></td><td>Once when app shuts down</td><td>Close connections cleanly</td></tr>
+</table>
+
+<h4>Message Processing Flow:</h4>
+<table>
+  <tr><th>Step</th><th>Code</th><th>What Happens</th></tr>
+  <tr><td>1</td><td>eventArgs.Body.ToArray()</td><td>Get raw bytes from the message</td></tr>
+  <tr><td>2</td><td>Encoding.UTF8.GetString(body)</td><td>Bytes → JSON string</td></tr>
+  <tr><td>3</td><td>JsonSerializer.Deserialize</td><td>JSON string → EmployeeEvent object</td></tr>
+  <tr><td>4</td><td>_logger.LogInformation</td><td>Write to application log (audit trail)</td></tr>
+  <tr><td>5</td><td>BasicAckAsync</td><td>Tell RabbitMQ: "Done, remove from queue"</td></tr>
+</table>
+
+<div class="concept">
+  &#128161; <strong>What is Acknowledgement (Ack)?</strong><br/>
+  By default, when a consumer receives a message, RabbitMQ keeps it in the queue until the consumer sends an <strong>Ack (acknowledgement)</strong>. This is important:
+  <ul>
+    <li>If the consumer crashes BEFORE acking → RabbitMQ re-delivers the message to another consumer</li>
+    <li>If <code>autoAck=true</code> → message is removed as soon as it's received (risky — message lost if processing fails)</li>
+    <li>If <code>autoAck=false</code> (our choice) → we manually ack AFTER processing → <strong>safer and more reliable</strong></li>
+  </ul>
+</div>
+
+<hr/>
+
+<!-- STEP 8 -->
+<h2 id="step8">&#9319; Step 8: Register Hosted Service in Program.cs</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Tell ASP.NET Core to run <code>EmployeeEventConsumer</code> as a background service automatically when the application starts.
+</div>
+
+<h3>File: EmployeeApp.Api/Program.cs — add this line:</h3>
+<pre><code><span class="comment">// Register EmployeeEventConsumer as a Hosted Service</span>
+builder.Services.AddHostedService&lt;<span class="type">EmployeeEventConsumer</span>&gt;();
+
+<span class="comment">// Also register the publisher as Singleton</span>
+builder.Services.AddSingleton&lt;<span class="type">RabbitMQPublisher</span>&gt;();
+</code></pre>
+
+<h4>AddHostedService vs AddSingleton:</h4>
+<table>
+  <tr><th>Method</th><th>Use For</th><th>Difference</th></tr>
+  <tr><td><code>AddHostedService&lt;T&gt;()</code></td><td>Background services (Consumer)</td><td>Auto-starts when app starts, stops when app stops</td></tr>
+  <tr><td><code>AddSingleton&lt;T&gt;()</code></td><td>Regular services (Publisher)</td><td>Created on first injection, shared for app lifetime</td></tr>
+</table>
+
+<hr/>
+
+<!-- STEP 9 -->
+<h2 id="step9">&#9320; Step 9: Test the Complete Flow</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Verify the end-to-end flow — create/delete an employee and see the message travel through RabbitMQ to the consumer.
+</div>
+
+<h3>Test Checklist:</h3>
+
+<h4>1. Start the API and watch the console output</h4>
+<p>You should see on startup:</p>
+<pre><code>info: EmployeeApp.Api.Messaging.EmployeeEventConsumer[0]
+      EmployeeEventConsumer started. Listening to queue...
+</code></pre>
+
+<h4>2. Check RabbitMQ Management UI</h4>
+<p>Open <strong>http://localhost:15672</strong> → Queues tab</p>
+<p>You should see <strong>"employee.events.Queue"</strong> listed ✅</p>
+
+<h4>3. Create an Employee (via Swagger or Postman)</h4>
+<pre><code>POST https://localhost:7021/api/employees
+Authorization: Bearer &lt;your-token&gt;
+Content-Type: application/json
+
+{
+  "name": "John Smith",
+  "gender": "Male",
+  "age": 30,
+  "salary": 50000,
+  "deptId": 1
+}
+</code></pre>
+
+<h4>4. Watch the API Console</h4>
+<p>You should immediately see the consumer log:</p>
+<pre><code>info: EmployeeApp.Api.Messaging.EmployeeEventConsumer[0]
+      [AUDIT] Employee Created: ID=5, Name=John Smith, Time=2025-07-01T10:30:00
+</code></pre>
+
+<h4>5. Delete the Employee</h4>
+<pre><code>DELETE https://localhost:7021/api/employees/5
+Authorization: Bearer &lt;your-token&gt;
+</code></pre>
+
+<h4>6. Watch the console again:</h4>
+<pre><code>info: EmployeeApp.Api.Messaging.EmployeeEventConsumer[0]
+      [AUDIT] Employee Deleted: ID=5, Name=John Smith, Time=2025-07-01T10:31:00
+</code></pre>
+
+<hr/>
+
+<!-- SUMMARY -->
+<h2>&#9989; Summary — What We Built</h2>
+
+<table>
+  <tr><th>Step</th><th>What We Created</th><th>File</th></tr>
+  <tr><td>1</td><td>Install RabbitMQ.Client NuGet package</td><td>EmployeeApp.Api.csproj</td></tr>
+  <tr><td>2</td><td>RabbitMQ configuration</td><td>appsettings.json</td></tr>
+  <tr><td>3</td><td>EmployeeEvent model (message contract)</td><td>Events/EmployeeEvent.cs</td></tr>
+  <tr><td>4</td><td>RabbitMQPublisher (sends messages)</td><td>Messaging/RabbitMQPublisher.cs</td></tr>
+  <tr><td>5</td><td>Register Publisher in DI</td><td>Program.cs</td></tr>
+  <tr><td>6</td><td>Publish events from EmployeeService</td><td>Services/EmployeeService.cs</td></tr>
+  <tr><td>7</td><td>EmployeeEventConsumer (BackgroundService)</td><td>Messaging/EmployeeEventConsumer.cs</td></tr>
+  <tr><td>8</td><td>Register Hosted Service in DI</td><td>Program.cs</td></tr>
+  <tr><td>9</td><td>Test the complete flow</td><td>Browser / Postman</td></tr>
+</table>
+
+<h3>Key Concepts Demonstrated to Trainees:</h3>
+<table>
+  <tr><th>Concept</th><th>Where Demonstrated</th></tr>
+  <tr><td>Message Broker pattern</td><td>RabbitMQ queue between Publisher and Consumer</td></tr>
+  <tr><td>Publisher / Producer</td><td>RabbitMQPublisher.cs</td></tr>
+  <tr><td>Consumer</td><td>EmployeeEventConsumer.cs</td></tr>
+  <tr><td>Hosted Service / BackgroundService</td><td>EmployeeEventConsumer extends BackgroundService</td></tr>
+  <tr><td>Service lifetime (Singleton)</td><td>RabbitMQPublisher registered as Singleton</td></tr>
+  <tr><td>Manual Acknowledgement</td><td>BasicAckAsync in consumer</td></tr>
+  <tr><td>Event-driven architecture</td><td>API responds immediately, consumer processes asynchronously</td></tr>
+  <tr><td>Durable queues &amp; messages</td><td>durable:true and Persistent:true</td></tr>
+  <tr><td>Decoupled services</td><td>EmployeeService doesn't know about the consumer</td></tr>
+</table>
+
+<hr/>
+<p style="text-align:center;color:#888;font-size:13px">
+  Generated for training purposes &nbsp;|&nbsp; EmployeeApp &nbsp;|&nbsp; .NET 10 &nbsp;|&nbsp; RabbitMQ + Hosted Service
+</p>
+
+</body>
+</html>

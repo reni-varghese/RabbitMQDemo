@@ -1,0 +1,26 @@
+<div class="container">
+    <h3>Employee Detaild</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Employee Id</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(employee of employees();track employee.id){
+                <tr>
+                    <td>{{employee.id}}</td>
+                    <td>{{employee.name}}</td>
+                    <td>{{employee.gender}}</td>
+                    <td>{{employee.age}}</td>
+                    <td>{{employee.salary}}</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

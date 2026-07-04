@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EmployeeApp SSO Integration Guide</title>
+  <style>
+    :root {
+      --brand-primary: #0b5cab;
+      --brand-secondary: #0a8f7a;
+      --ink: #1b2430;
+      --muted: #5b6472;
+      --paper: #ffffff;
+      --surface: #f5f8fc;
+      --line: #d9e1ec;
+      --code-bg: #0f172a;
+      --code-ink: #e2e8f0;
+      --ok-bg: #ecfdf5;
+      --warn-bg: #fff7ed;
+      --note-bg: #eff6ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #e7f1ff 0%, #f8fbff 100%);
+      line-height: 1.55;
+    }
+
+    .doc {
+      width: min(1080px, 96vw);
+      margin: 24px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.09);
+      overflow: hidden;
+    }
+
+    .cover {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,0.24) 0 18%, transparent 19%),
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,0.18) 0 16%, transparent 17%),
+        linear-gradient(130deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+      color: #fff;
+      padding: 30px 42px 34px;
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .logo {
+      border: 2px dashed rgba(255,255,255,0.65);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 13px;
+      opacity: 0.95;
+    }
+
+    .cover h1 {
+      margin: 8px 0 6px;
+      font-size: clamp(28px, 3.2vw, 38px);
+      line-height: 1.2;
+      letter-spacing: 0.3px;
+    }
+
+    .cover p {
+      margin: 0;
+      max-width: 860px;
+      opacity: 0.96;
+      font-size: 15px;
+    }
+
+    .content {
+      padding: 30px 42px 42px;
+    }
+
+    h2 {
+      margin: 28px 0 10px;
+      font-size: 23px;
+      color: #113a5f;
+      border-bottom: 2px solid #eaf0f7;
+      padding-bottom: 7px;
+    }
+
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 18px;
+      color: #174f7e;
+    }
+
+    p, li {
+      font-size: 15px;
+    }
+
+    ul, ol { padding-left: 22px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+
+    .path {
+      display: inline-block;
+      margin: 6px 0;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      border: 1px solid #dde5ef;
+      background: #f8fbff;
+      border-radius: 8px;
+      padding: 3px 8px;
+    }
+
+    pre {
+      margin: 10px 0 16px;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+    }
+
+    pre code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      white-space: pre;
+    }
+
+    .note, .warn, .ok {
+      border-radius: 10px;
+      border-left: 4px solid;
+      padding: 10px 12px;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+
+    .note { border-color: #2563eb; background: var(--note-bg); }
+    .warn { border-color: #ea580c; background: var(--warn-bg); }
+    .ok { border-color: #059669; background: var(--ok-bg); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f2f7fd;
+      color: #1f3b58;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      padding: 14px 42px 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 860px) {
+      .content, .cover, .footer { padding-left: 18px; padding-right: 18px; }
+      .grid { grid-template-columns: 1fr; }
+      .meta { text-align: left; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .doc {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .cover {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <article class="doc">
+    <section class="cover">
+      <div class="brand-row">
+        <div class="logo">COMPANY LOGO / TEAM NAME</div>
+        <div class="meta">
+          Document Type: Technical Implementation Guide<br />
+          Solution: EmployeeApp<br />
+          Date: 2026-06-30
+        </div>
+      </div>
+      <h1>Single Login Integration Guide</h1>
+      <p>
+        Implement one login in Angular and use the same authentication context in the Blazor client,
+        so users do not need to sign in twice.
+      </p>
+    </section>
+
+    <section class="content">
+      <h2>Executive Summary</h2>
+      <p>
+        This guide explains how to make Angular the primary login entry point and transfer JWT authentication
+        to Blazor WebAssembly during navigation.
+      </p>
+
+      <div class="grid">
+        <div class="box">
+          <strong>Business Outcome</strong>
+          <ul>
+            <li>Single sign-in experience</li>
+            <li>No duplicate login form for users</li>
+            <li>Consistent role-based authorization across clients</li>
+          </ul>
+        </div>
+        <div class="box">
+          <strong>Technical Constraint</strong>
+          <ul>
+            <li>Angular and Blazor are different origins</li>
+            <li>localStorage is isolated by origin</li>
+            <li>Token handoff is required</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Architecture</h2>
+      <ol>
+        <li>User logs in on Angular.</li>
+        <li>Angular stores JWT from API.</li>
+        <li>Angular redirects to Blazor login route with token query parameter.</li>
+        <li>Blazor reads token from URL, stores it locally, and updates auth state.</li>
+        <li>Blazor navigates to protected route as authenticated user.</li>
+      </ol>
+
+      <h2>Implementation Steps</h2>
+
+      <h3>Step 1: Add Blazor base URL in Angular config</h3>
+      <div class="path">emp-client/src/app/core/config/client-config.ts</div>
+      <pre><code>export const API_BASE_URL = "https://localhost:7021/api";
+export const BLAZOR_CLIENT_URL = "https://localhost:7280";</code></pre>
+      <p>This keeps endpoints centralized and avoids hardcoded URLs in components.</p>
+
+      <h3>Step 2: Build Blazor launch URL in Angular AuthService</h3>
+      <div class="path">emp-client/src/app/services/auth-service.ts</div>
+      <pre><code>import { API_BASE_URL, BLAZOR_CLIENT_URL } from '../core/config/client-config';
+
+getBlazorLaunchUrl() {
+  const token = this.getToken();
+  if (!token) return null;
+
+  // Prevent query string breakage by encoding JWT
+  const encodedToken = encodeURIComponent(token);
+  return `${BLAZOR_CLIENT_URL}/login?token=${encodedToken}`;
+}</code></pre>
+      <p>
+        The token is URL encoded before navigation to preserve all special characters.
+      </p>
+
+      <h3>Step 3: Add Open Blazor App action in Angular navbar</h3>
+      <div class="path">emp-client/src/app/components/main-nav/main-nav.ts</div>
+      <pre><code>openBlazorApp() {
+  const url = this.authService.getBlazorLaunchUrl();
+  if (!url) {
+    this.router.navigate(["/login"]);
+    return;
+  }
+
+  window.location.href = url;
+}</code></pre>
+
+      <div class="path">emp-client/src/app/components/main-nav/main-nav.html</div>
+      <pre><code>@if(isLoggedIn()){
+  &lt;li class="nav-item"&gt;
+    &lt;button class="btn btn-link nav-link" (click)="openBlazorApp()"&gt;
+      Open Blazor App
+    &lt;/button&gt;
+  &lt;/li&gt;
+}</code></pre>
+
+      <h3>Step 4: Turn Blazor login page into token consumer</h3>
+      <div class="path">EmployeeClient/Pages/Login.razor</div>
+      <pre><code>@page "/login"
+
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+@if (isProcessingToken)
+{
+  &lt;p&gt;Signing you in and redirecting...&lt;/p&gt;
+}
+else
+{
+  &lt;div class="alert alert-info"&gt;
+    Login is managed by Angular.
+    &lt;a href="http://localhost:4200/login"&gt;Go to Angular Login&lt;/a&gt;
+  &lt;/div&gt;
+}
+
+@code {
+  private bool isProcessingToken = true;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var token = GetTokenFromQuery();
+    if (string.IsNullOrWhiteSpace(token))
+    {
+      isProcessingToken = false;
+      return;
+    }
+
+    await JS.InvokeVoidAsync("localStorage.setItem", "token", token);
+    AuthStateProvider.NotifyUserLoggedIn(token);
+    Nav.NavigateTo("/", true);
+  }
+
+  private string? GetTokenFromQuery()
+  {
+    var uri = Nav.ToAbsoluteUri(Nav.Uri);
+    var parsed = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+    if (!parsed.TryGetValue("token", out var values))
+    {
+      return null;
+    }
+
+    var token = values.ToString();
+    return string.IsNullOrWhiteSpace(token) ? null : token;
+  }
+}</code></pre>
+
+      <h3>Step 5: Redirect unauthenticated Blazor users to Angular login</h3>
+      <div class="path">EmployeeClient/App.razor</div>
+      <pre><code>&lt;NotAuthorized&gt;
+  &lt;p&gt;You are not authorized. Please
+    &lt;a href="http://localhost:4200/login"&gt;login from Angular&lt;/a&gt;.
+  &lt;/p&gt;
+&lt;/NotAuthorized&gt;</code></pre>
+
+      <div class="path">EmployeeClient/Layout/MainLayout.razor</div>
+      <pre><code>&lt;NotAuthorized&gt;
+  &lt;li class="nav-item"&gt;
+    &lt;a class="nav-link" href="http://localhost:4200/login"&gt;Login&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/NotAuthorized&gt;
+
+private async Task HandleLogout()
+{
+  await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+  AuthStateProvider.NotifyUserLoggedOut();
+  Nav.NavigateTo("http://localhost:4200/login", true);
+}</code></pre>
+
+      <div class="ok">
+        Outcome: one credential prompt in Angular, shared authenticated behavior in both clients.
+      </div>
+
+      <h2>Security Guidance</h2>
+      <div class="warn">
+        Passing raw JWT in URL is acceptable for local development and internal demos only.
+        For production, avoid exposing JWT in query strings.
+      </div>
+
+      <h3>Production-safe token handoff</h3>
+      <ol>
+        <li>Angular requests one-time handoff code from API (authenticated call).</li>
+        <li>API stores short-lived mapping code to user context.</li>
+        <li>Angular redirects to Blazor with code parameter, not JWT.</li>
+        <li>Blazor exchanges code for token via API.</li>
+        <li>API invalidates the code after first use.</li>
+      </ol>
+
+      <h2>Testing Checklist</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Expected Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Angular login</td>
+            <td>JWT stored in Angular localStorage</td>
+          </tr>
+          <tr>
+            <td>Navigate to Blazor from Angular</td>
+            <td>URL contains token parameter in development flow</td>
+          </tr>
+          <tr>
+            <td>Blazor login consumer route</td>
+            <td>Token stored in Blazor localStorage, auth state updated</td>
+          </tr>
+          <tr>
+            <td>Role-protected Blazor pages</td>
+            <td>AuthorizeView and route authorization work as expected</td>
+          </tr>
+          <tr>
+            <td>Logout from Blazor</td>
+            <td>Token cleared and redirected to Angular login</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Troubleshooting</h2>
+      <ul>
+        <li>401 in Blazor: confirm token exists in Blazor localStorage origin.</li>
+        <li>Missing roles: verify JWT role claim names align with authorization checks.</li>
+        <li>Loop on login route: confirm token is consumed once, then redirect to root.</li>
+        <li>CORS errors: allow both Angular and Blazor origins in API CORS policy.</li>
+      </ul>
+
+      <div class="note no-print">
+        PDF tip: open this file in browser, press Ctrl+P, choose Save as PDF, and enable Background graphics.
+      </div>
+    </section>
+
+    <section class="footer">
+      Prepared by: ____________________ | Reviewed by: ____________________ | Version: 1.0
+    </section>
+  </article>
+</body>
+</html>

@@ -1,0 +1,20 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "AllowedOrigins": [ "http://localhost:4200", "http://localhost:3000" ],
+  "ConnectionStrings": {
+    "DbCon": "Server=.;Database=sprint3db;User Id=reni;Password=password;TrustServerCertificate=True"
+  },
+  "Jwt": {
+    "Issuer": "EmployeeApp.Api",
+    "Audience": "EmployeeApp.Api",
+    "Key": "78acd5d93d025413e160ebc47dd1c2ead48aee30e3a4080b71c49c9221c97958",
+    "AccessTokenExpirationMinutes":  15
+  }
+
+}

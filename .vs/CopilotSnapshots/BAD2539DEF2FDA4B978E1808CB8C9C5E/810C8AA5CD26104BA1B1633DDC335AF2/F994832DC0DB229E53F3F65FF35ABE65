@@ -1,0 +1,25 @@
+﻿@inherits LayoutComponentBase
+<div>
+  
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand" href="">Employee App</a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <NavLink class="nav-link text-light" href="employees">Employee List</NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link text-light" href="add">Add Employee</NavLink>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        @* <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div> *@
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

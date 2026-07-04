@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" routerLink="">Employee App</a>
+    <ul class="navbar-nav">
+        @if(isLoggedIn()){
+
+            <li class="nav-item">
+                <a routerLink="/employees" class="nav-link">Employee Details</a>
+            </li>
+        }
+        @if(isLoggedIn() && isAdmin()){
+
+            <li class="nav-item">
+                <a routerLink="/employees/new" class="nav-link">Add Employee</a>
+            </li>
+        }
+        @if(!isLoggedIn()){
+
+            <li class="nav-item">
+                <a routerLink="/login" class="nav-link">Login</a>
+            </li>
+        }
+        @if(isLoggedIn()){
+
+            <li class="nav-item">
+                <button class=" btn btn-link nav-link" (click)="logout()">Logout</button>
+            </li>
+        }
+    </ul>
+
+</nav>

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blazor WebAssembly Client - Step by Step Guide</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #222; line-height: 1.7; }
+  h1 { color: #1a4f8a; border-bottom: 3px solid #1a4f8a; padding-bottom: 10px; }
+  h2 { color: #1a4f8a; margin-top: 40px; border-left: 5px solid #1a4f8a; padding-left: 12px; }
+  h3 { color: #2e7d32; margin-top: 24px; }
+  h4 { color: #555; margin-top: 14px; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; }
+  code { font-family: 'Consolas', 'Courier New', monospace; }
+  .keyword  { color: #569cd6; }
+  .string   { color: #ce9178; }
+  .comment  { color: #6a9955; font-style: italic; }
+  .type     { color: #4ec9b0; }
+  .step-box { background: #e8f4fd; border: 1px solid #90caf9; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
+  .purpose  { background: #fff8e1; border-left: 4px solid #f9a825; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  .warning  { background: #fce4ec; border-left: 4px solid #e53935; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  .tip      { background: #e8f5e9; border-left: 4px solid #43a047; padding: 10px 16px; margin: 10px 0; border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th { background: #1a4f8a; color: white; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #ccc; padding: 9px 14px; }
+  tr:nth-child(even) td { background: #f5f5f5; }
+  .line-exp { margin: 6px 0 6px 20px; }
+  .line-exp span.line-code { font-family: Consolas, monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 13px; color: #c7254e; }
+  .toc { background: #f9f9f9; border: 1px solid #ddd; padding: 16px 24px; border-radius: 6px; display: inline-block; min-width: 340px; }
+  .toc li { margin: 5px 0; }
+  .toc a { color: #1a4f8a; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  @media print { body { margin: 20px; } pre { font-size: 11px; } }
+  .badge { display: inline-block; background: #1a4f8a; color: white; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin-right: 6px; }
+  .badge.green { background: #2e7d32; }
+  .badge.orange { background: #e65100; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<h1>&#128187; Building a Blazor WebAssembly Client</h1>
+<h3 style="color:#555;font-weight:normal">Step-by-Step Guide — ASP.NET Core Web API with JWT Authentication</h3>
+<p><strong>Author:</strong> Training Reference &nbsp;|&nbsp; <strong>Framework:</strong> .NET 10 &nbsp;|&nbsp; <strong>Project:</strong> EmployeeApp</p>
+
+<hr/>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <strong>&#128196; Table of Contents</strong>
+  <ol>
+    <li><a href="#overview">Solution Overview</a></li>
+    <li><a href="#step1">Step 1: Configure HttpClient</a></li>
+    <li><a href="#step2">Step 2: Update _Imports.razor</a></li>
+    <li><a href="#step3">Step 3: Create Login Page</a></li>
+    <li><a href="#step4">Step 4: Create Register Page</a></li>
+    <li><a href="#step5">Step 5: Store JWT Token after Login</a></li>
+    <li><a href="#step6">Step 6: Create CustomAuthStateProvider</a></li>
+    <li><a href="#step7">Step 7: Register Services in Program.cs</a></li>
+    <li><a href="#step8">Step 8: Update App.razor</a></li>
+    <li><a href="#step9">Step 9: Update MainLayout.razor</a></li>
+    <li><a href="#step10">Step 10: Send Token with API Requests</a></li>
+    <li><a href="#step11">Step 11: Role-Based Employee List</a></li>
+  </ol>
+</div>
+
+<hr/>
+
+<!-- OVERVIEW -->
+<h2 id="overview">&#127757; Solution Overview</h2>
+
+<p>This guide explains how to build a <strong>Blazor WebAssembly</strong> client that connects to a secured ASP.NET Core Web API using <strong>JWT (JSON Web Token)</strong> authentication.</p>
+
+<table>
+  <tr><th>Project</th><th>Type</th><th>Purpose</th></tr>
+  <tr><td><strong>EmployeeApp.Api</strong></td><td>ASP.NET Core Web API</td><td>REST API with JWT auth, running on https://localhost:7021</td></tr>
+  <tr><td><strong>EmployeeApp.Shared</strong></td><td>Class Library</td><td>Shared DTOs used by both API and Client</td></tr>
+  <tr><td><strong>EmployeeClient</strong></td><td>Blazor WebAssembly</td><td>Browser-based client app, running on https://localhost:7280</td></tr>
+</table>
+
+<h3>API Endpoint Security Summary</h3>
+<table>
+  <tr><th>Endpoint</th><th>Method</th><th>Who Can Access</th></tr>
+  <tr><td>/api/auth/register</td><td>POST</td><td>Anonymous</td></tr>
+  <tr><td>/api/auth/login</td><td>POST</td><td>Anonymous</td></tr>
+  <tr><td>/api/employees</td><td>GET</td><td>User + Admin</td></tr>
+  <tr><td>/api/employees/{id}</td><td>GET</td><td>User + Admin</td></tr>
+  <tr><td>/api/employees</td><td>POST</td><td>Admin only</td></tr>
+  <tr><td>/api/employees/{id}</td><td>PUT</td><td>User + Admin</td></tr>
+  <tr><td>/api/employees/{id}</td><td>DELETE</td><td>Admin only</td></tr>
+</table>
+
+<h3>Authentication Flow</h3>
+<div class="purpose">
+  <strong>How JWT Authentication Works in this App:</strong><br/>
+  1. User submits email + password on Login page<br/>
+  2. Client POSTs to /api/auth/login<br/>
+  3. API verifies credentials and returns a JWT token<br/>
+  4. Client saves token to <strong>browser localStorage</strong><br/>
+  5. Every subsequent API call includes the token in the <code>Authorization: Bearer &lt;token&gt;</code> header<br/>
+  6. API verifies the token and grants or denies access
+</div>
+
+<hr/>
+
+<!-- STEP 1 -->
+<h2 id="step1">&#9312; Step 1: Configure HttpClient in Program.cs</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Tell Blazor's HttpClient where the API lives. Every API call made from the client will use this base URL.
+</div>
+
+<h3>File: EmployeeClient/Program.cs</h3>
+<pre><code>builder.Services.AddScoped(sp =&gt; <span class="keyword">new</span> <span class="type">HttpClient</span> 
+{ 
+    BaseAddress = <span class="keyword">new</span> <span class="type">Uri</span>(<span class="string">"https://localhost:7021/"</span>) 
+});
+</code></pre>
+
+<h4>Line-by-Line Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">builder.Services.AddScoped(...)</span> — Registers the HttpClient as a <strong>Scoped</strong> service in the DI (Dependency Injection) container. In Blazor WASM, Scoped means one instance per app lifetime.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">new HttpClient { BaseAddress = new Uri("https://localhost:7021/") }</span> — Creates an HttpClient with the API's URL as its base. All relative URLs like <code>api/auth/login</code> will be resolved against this base.</div>
+<div class="tip">&#128161; <strong>Tip:</strong> The trailing slash <code>/</code> at the end of the URL is <strong>required</strong>. Without it, relative paths like <code>api/auth/login</code> won't resolve correctly.</div>
+
+<hr/>
+
+<!-- STEP 2 -->
+<h2 id="step2">&#9313; Step 2: Update _Imports.razor</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Add global <code>@using</code> directives so all Razor components can use the shared DTOs and auth classes without repeating the using statements in every file.
+</div>
+
+<h3>File: EmployeeClient/_Imports.razor</h3>
+<pre><code>@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using EmployeeClient
+@using EmployeeClient.Layout
+@using EmployeeApp.Api.Models.Dtos     <span class="comment">// &lt;-- ADDED: LoginDto, RegisterDto, EmployeeDto</span>
+@using EmployeeApp.Api.Models           <span class="comment">// &lt;-- ADDED: AuthResponse</span>
+@using Microsoft.AspNetCore.Components.Authorization  <span class="comment">// &lt;-- ADDED: AuthorizeView, CascadingAuthenticationState</span>
+@using EmployeeClient.Auth              <span class="comment">// &lt;-- ADDED: CustomAuthStateProvider</span>
+</code></pre>
+
+<h4>Line-by-Line Explanation (New Lines Only):</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">@using EmployeeApp.Api.Models.Dtos</span> — Imports the namespace containing <strong>LoginDto</strong>, <strong>RegisterDto</strong>, <strong>EmployeeDto</strong> from the Shared project.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@using EmployeeApp.Api.Models</span> — Imports the namespace containing <strong>AuthResponse</strong> (the object returned after successful login, containing the JWT token).</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@using Microsoft.AspNetCore.Components.Authorization</span> — Imports Blazor's built-in authentication components: <strong>AuthorizeView</strong>, <strong>CascadingAuthenticationState</strong>, <strong>AuthorizeRouteView</strong>.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@using EmployeeClient.Auth</span> — Imports our custom auth folder so <strong>CustomAuthStateProvider</strong> can be used in any Razor component.</div>
+
+<hr/>
+
+<!-- STEP 3 -->
+<h2 id="step3">&#9314; Step 3: Create Login Page</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Build a form where the user enters their email and password. On submit, it calls the API's login endpoint.
+</div>
+
+<h3>File: EmployeeClient/Pages/Login.razor</h3>
+<pre><code>@page <span class="string">"/login"</span>
+@inject <span class="type">HttpClient</span> Http
+@inject <span class="type">IJSRuntime</span> JS
+@inject <span class="type">CustomAuthStateProvider</span> AuthStateProvider
+@inject <span class="type">NavigationManager</span> Nav
+
+&lt;h3 class=<span class="string">"text-primary"</span>&gt;Login&lt;/h3&gt;
+
+&lt;div class=<span class="string">"col-4"</span>&gt;
+    &lt;EditForm Model=<span class="string">"LoginRequest"</span> OnValidSubmit=<span class="string">"HandleLogin"</span>&gt;
+        &lt;div class=<span class="string">"mb-2"</span>&gt;
+            &lt;label class=<span class="string">"fw-bold"</span>&gt;Email&lt;/label&gt;
+            &lt;InputText class=<span class="string">"form-control"</span> @bind-Value=<span class="string">"LoginRequest.Email"</span>/&gt;
+            &lt;ValidationMessage For=<span class="string">"()=&gt;LoginRequest.Email"</span>/&gt;
+        &lt;/div&gt;
+        &lt;div class=<span class="string">"mb-2"</span>&gt;
+            &lt;label class=<span class="string">"fw-bold"</span>&gt;Password&lt;/label&gt;
+            &lt;InputText type=<span class="string">"password"</span> class=<span class="string">"form-control"</span> @bind-Value=<span class="string">"LoginRequest.Password"</span>/&gt;
+            &lt;ValidationMessage For=<span class="string">"()=&gt;LoginRequest.Password"</span>/&gt;
+        &lt;/div&gt;
+        &lt;button class=<span class="string">"btn btn-primary"</span>&gt;Login&lt;/button&gt;
+    &lt;/EditForm&gt;
+&lt;/div&gt;
+
+@code {
+    <span class="keyword">private</span> <span class="type">LoginDto</span> LoginRequest = <span class="keyword">new</span>();
+
+    <span class="keyword">private async</span> <span class="type">Task</span> HandleLogin()
+    {
+        <span class="keyword">var</span> response = <span class="keyword">await</span> Http.PostAsJsonAsync(<span class="string">"api/auth/login"</span>, LoginRequest);
+        <span class="keyword">if</span> (response.IsSuccessStatusCode)
+        {
+            <span class="keyword">var</span> authResponse = <span class="keyword">await</span> response.Content.ReadFromJsonAsync&lt;<span class="type">AuthResponse</span>&gt;();
+            <span class="keyword">await</span> JS.InvokeVoidAsync(<span class="string">"localStorage.setItem"</span>, <span class="string">"token"</span>, authResponse!.AccessToken);
+            AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
+            Nav.NavigateTo(<span class="string">"/"</span>);
+        }
+        <span class="keyword">else</span>
+        {
+            Console.WriteLine(<span class="string">"Invalid Credentials"</span>);
+        }
+    }
+}
+</code></pre>
+
+<h4>Line-by-Line Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">@page "/login"</span> — Registers this component as a routable page. Navigating to <code>/login</code> shows this component.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@inject HttpClient Http</span> — Injects the HttpClient registered in Program.cs. Used to call the API.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@inject IJSRuntime JS</span> — Injects the JavaScript interop service. Used to call browser JavaScript functions (like localStorage).</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@inject CustomAuthStateProvider AuthStateProvider</span> — Injects our custom auth provider to notify Blazor when login happens.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@inject NavigationManager Nav</span> — Injects the navigation service. Used to redirect after login.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;EditForm Model="LoginRequest" OnValidSubmit="HandleLogin"&gt;</span> — Blazor's form component. <code>Model</code> is the object being edited. <code>OnValidSubmit</code> calls <code>HandleLogin</code> only if validation passes.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;InputText @bind-Value="LoginRequest.Email"/&gt;</span> — Two-way binding: user types in the box → value is stored in <code>LoginRequest.Email</code>. <strong>Always use capital V</strong> in <code>@bind-Value</code>.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;ValidationMessage For="()=&gt;LoginRequest.Email"/&gt;</span> — Displays validation error messages for the Email field when form is submitted.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">private LoginDto LoginRequest = new();</span> — Creates an empty LoginDto object to hold the form data. Initialized with <code>new()</code> to avoid null reference errors.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">Http.PostAsJsonAsync("api/auth/login", LoginRequest)</span> — Sends a POST request to the API with the LoginDto as JSON body. Returns an HttpResponseMessage.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">response.IsSuccessStatusCode</span> — Returns true if the HTTP status code is in the 200-299 range (e.g., 200 OK).</div>
+<div class="line-exp">&#x25B6; <span class="line-code">response.Content.ReadFromJsonAsync&lt;AuthResponse&gt;()</span> — Reads the JSON body of the response and deserializes it into an <code>AuthResponse</code> object (which contains the JWT token).</div>
+<div class="line-exp">&#x25B6; <span class="line-code">JS.InvokeVoidAsync("localStorage.setItem", "token", authResponse!.AccessToken)</span> — Calls browser's JavaScript <code>localStorage.setItem("token", "...")</code> to save the JWT token. The <code>!</code> asserts authResponse is not null.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken)</span> — Tells Blazor's auth system "a user just logged in" with this token, causing the UI to immediately update (NavMenu changes from Login/Register to Logout).</div>
+<div class="line-exp">&#x25B6; <span class="line-code">Nav.NavigateTo("/")</span> — Redirects the user to the home page after successful login.</div>
+
+<hr/>
+
+<!-- STEP 4 -->
+<h2 id="step4">&#9315; Step 4: Create Register Page</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Build a registration form that collects Email, Password, ConfirmPassword and Role, then calls the API to create a new user.
+</div>
+
+<h3>File: EmployeeClient/Pages/Register.razor</h3>
+<pre><code>@page <span class="string">"/register"</span>
+@inject <span class="type">HttpClient</span> Http
+
+&lt;h3 class=<span class="string">"text-primary"</span>&gt;Register&lt;/h3&gt;
+
+&lt;div class=<span class="string">"col-4"</span>&gt;
+    &lt;EditForm Model=<span class="string">"RegisterRequest"</span> OnValidSubmit=<span class="string">"HandleRegister"</span>&gt;
+        &lt;div class=<span class="string">"mb-2"</span>&gt;
+            &lt;label class=<span class="string">"fw-bold"</span>&gt;Email&lt;/label&gt;
+            &lt;InputText class=<span class="string">"form-control"</span> @bind-Value=<span class="string">"RegisterRequest.Email"</span>/&gt;
+            &lt;ValidationMessage For=<span class="string">"()=&gt;RegisterRequest.Email"</span>/&gt;
+        &lt;/div&gt;
+        &lt;div class=<span class="string">"mb-2"</span>&gt;
+            &lt;label class=<span class="string">"fw-bold"</span>&gt;Password&lt;/label&gt;
+            &lt;InputText type=<span class="string">"password"</span> class=<span class="string">"form-control"</span> @bind-Value=<span class="string">"RegisterRequest.Password"</span>/&gt;
+            &lt;ValidationMessage For=<span class="string">"()=&gt;RegisterRequest.Password"</span>/&gt;
+        &lt;/div&gt;
+        &lt;div class=<span class="string">"mb-2"</span>&gt;
+            &lt;label class=<span class="string">"fw-bold"</span>&gt;Confirm Password&lt;/label&gt;
+            &lt;InputText type=<span class="string">"password"</span> class=<span class="string">"form-control"</span> @bind-Value=<span class="string">"RegisterRequest.ConfirmPassword"</span>/&gt;
+            &lt;ValidationMessage For=<span class="string">"()=&gt;RegisterRequest.ConfirmPassword"</span>/&gt;
+        &lt;/div&gt;
+        &lt;div class=<span class="string">"mb-2"</span>&gt;
+            &lt;label class=<span class="string">"fw-bold"</span>&gt;Role&lt;/label&gt;
+            &lt;InputSelect class=<span class="string">"form-control"</span> @bind-Value=<span class="string">"RegisterRequest.Role"</span>&gt;
+                &lt;option value=<span class="string">"User"</span>&gt;User&lt;/option&gt;
+                &lt;option value=<span class="string">"Admin"</span>&gt;Admin&lt;/option&gt;
+            &lt;/InputSelect&gt;
+        &lt;/div&gt;
+        &lt;button class=<span class="string">"btn btn-primary"</span>&gt;Register&lt;/button&gt;
+    &lt;/EditForm&gt;
+&lt;/div&gt;
+
+@code {
+    <span class="keyword">private</span> <span class="type">RegisterDto</span> RegisterRequest = <span class="keyword">new</span>();
+
+    <span class="keyword">private async</span> <span class="type">Task</span> HandleRegister()
+    {
+        <span class="keyword">var</span> response = <span class="keyword">await</span> Http.PostAsJsonAsync(<span class="string">"api/auth/register"</span>, RegisterRequest);
+        <span class="keyword">if</span> (response.IsSuccessStatusCode)
+            Console.WriteLine(<span class="string">"User Registered Successfully"</span>);
+        <span class="keyword">else</span>
+            Console.WriteLine(<span class="string">"Registration Failed"</span>);
+    }
+}
+</code></pre>
+
+<h4>Key Points (Differences from Login):</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;InputSelect @bind-Value="RegisterRequest.Role"&gt;</span> — Blazor's dropdown component for use inside EditForm. Always use <code>InputSelect</code> (not plain HTML <code>&lt;select&gt;</code>) inside an EditForm so data binding works correctly.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;option value="User"&gt;User&lt;/option&gt;</span> — Each option has a <code>value</code> that gets bound to <code>RegisterRequest.Role</code> when selected.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">RegisterDto RegisterRequest = new()</span> — <code>RegisterDto.Role</code> has a default value of <code>"User"</code> in the Shared project, so the dropdown starts pre-selected on "User".</div>
+
+<hr/>
+
+<!-- STEP 5 -->
+<h2 id="step5">&#9316; Step 5: Store JWT Token after Login</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> After a successful login, save the JWT token to the browser's localStorage so it persists across page navigations and can be attached to future API calls.
+</div>
+
+<h3>What is a JWT Token?</h3>
+<p>A JWT (JSON Web Token) is a string with 3 parts separated by dots: <code>Header.Payload.Signature</code></p>
+<p>The <strong>Payload</strong> (middle part) contains <strong>claims</strong> — facts about the user encoded in Base64:</p>
+<table>
+  <tr><th>Claim</th><th>Value Example</th><th>Meaning</th></tr>
+  <tr><td>sub</td><td>"a1b2c3-guid"</td><td>User's unique ID</td></tr>
+  <tr><td>email</td><td>"john@test.com"</td><td>User's email</td></tr>
+  <tr><td>jti</td><td>"some-guid"</td><td>Unique token ID</td></tr>
+  <tr><td>nameidentifier</td><td>"a1b2c3-guid"</td><td>User's ID (again)</td></tr>
+  <tr><td>role</td><td>"Admin"</td><td>User's role</td></tr>
+</table>
+
+<h3>What is localStorage?</h3>
+<div class="purpose">
+  Think of localStorage as a <strong>small notebook the browser keeps for your app</strong>. You can save key-value pairs that survive page refreshes. In Blazor WASM, we use <code>IJSRuntime</code> to call JavaScript's <code>localStorage</code> API.
+</div>
+
+<h3>Key Code in HandleLogin:</h3>
+<pre><code><span class="comment">// Read the AuthResponse JSON from the API response</span>
+<span class="keyword">var</span> authResponse = <span class="keyword">await</span> response.Content.ReadFromJsonAsync&lt;<span class="type">AuthResponse</span>&gt;();
+
+<span class="comment">// Save the JWT token to browser localStorage under the key "token"</span>
+<span class="keyword">await</span> JS.InvokeVoidAsync(<span class="string">"localStorage.setItem"</span>, <span class="string">"token"</span>, authResponse!.AccessToken);
+
+<span class="comment">// Tell Blazor the user is now logged in</span>
+AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
+</code></pre>
+
+<hr/>
+
+<!-- STEP 6 -->
+<h2 id="step6">&#9317; Step 6: Create CustomAuthStateProvider</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Blazor needs to know "is the user logged in or not?" at all times. The AuthenticationStateProvider is the class that answers this question by reading and parsing the JWT token.
+</div>
+
+<h3>File: EmployeeClient/Auth/CustomAuthStateProvider.cs</h3>
+<pre><code><span class="keyword">using</span> Microsoft.AspNetCore.Components.Authorization;
+<span class="keyword">using</span> Microsoft.JSInterop;
+<span class="keyword">using</span> System.Security.Claims;
+<span class="keyword">using</span> System.Text.Json;
+
+<span class="keyword">namespace</span> EmployeeClient.Auth
+{
+    <span class="keyword">public class</span> <span class="type">CustomAuthStateProvider</span> : <span class="type">AuthenticationStateProvider</span>
+    {
+        <span class="keyword">private readonly</span> <span class="type">IJSRuntime</span> _js;
+        <span class="keyword">private</span> <span class="type">ClaimsPrincipal</span> _currentUser = <span class="keyword">new</span> <span class="type">ClaimsPrincipal</span>(<span class="keyword">new</span> <span class="type">ClaimsIdentity</span>());
+
+        <span class="keyword">public</span> CustomAuthStateProvider(<span class="type">IJSRuntime</span> js)
+        {
+            _js = js;
+        }
+
+        <span class="comment">// Blazor calls this automatically to get the current auth state</span>
+        <span class="keyword">public override async</span> <span class="type">Task</span>&lt;<span class="type">AuthenticationState</span>&gt; GetAuthenticationStateAsync()
+        {
+            <span class="comment">// If user is already cached in memory, return immediately (no JS call needed)</span>
+            <span class="keyword">if</span> (_currentUser.Identity?.IsAuthenticated == <span class="keyword">true</span>)
+                <span class="keyword">return new</span> <span class="type">AuthenticationState</span>(_currentUser);
+
+            <span class="comment">// Read the token from browser localStorage</span>
+            <span class="keyword">var</span> token = <span class="keyword">await</span> _js.InvokeAsync&lt;<span class="keyword">string</span>&gt;(<span class="string">"localStorage.getItem"</span>, <span class="string">"token"</span>);
+
+            <span class="comment">// No token = anonymous (not logged in)</span>
+            <span class="keyword">if</span> (string.IsNullOrEmpty(token))
+                <span class="keyword">return new</span> <span class="type">AuthenticationState</span>(<span class="keyword">new</span> <span class="type">ClaimsPrincipal</span>(<span class="keyword">new</span> <span class="type">ClaimsIdentity</span>()));
+
+            <span class="comment">// Parse the JWT token to extract user claims</span>
+            <span class="keyword">var</span> claims = ParseClaimsFromJwt(token);
+            <span class="keyword">var</span> identity = <span class="keyword">new</span> <span class="type">ClaimsIdentity</span>(claims, <span class="string">"jwt"</span>);
+            _currentUser = <span class="keyword">new</span> <span class="type">ClaimsPrincipal</span>(identity);
+            <span class="keyword">return new</span> <span class="type">AuthenticationState</span>(_currentUser);
+        }
+
+        <span class="comment">// Call this after login — updates Blazor's auth state immediately</span>
+        <span class="keyword">public void</span> NotifyUserLoggedIn(<span class="keyword">string</span> token)
+        {
+            <span class="keyword">var</span> claims = ParseClaimsFromJwt(token);
+            <span class="keyword">var</span> identity = <span class="keyword">new</span> <span class="type">ClaimsIdentity</span>(claims, <span class="string">"jwt"</span>);
+            _currentUser = <span class="keyword">new</span> <span class="type">ClaimsPrincipal</span>(identity);
+            NotifyAuthenticationStateChanged(<span class="type">Task</span>.FromResult(<span class="keyword">new</span> <span class="type">AuthenticationState</span>(_currentUser)));
+        }
+
+        <span class="comment">// Call this after logout — sets user back to anonymous</span>
+        <span class="keyword">public void</span> NotifyUserLoggedOut()
+        {
+            _currentUser = <span class="keyword">new</span> <span class="type">ClaimsPrincipal</span>(<span class="keyword">new</span> <span class="type">ClaimsIdentity</span>());
+            NotifyAuthenticationStateChanged(<span class="type">Task</span>.FromResult(<span class="keyword">new</span> <span class="type">AuthenticationState</span>(_currentUser)));
+        }
+
+        <span class="comment">// Decodes the JWT payload and extracts claims</span>
+        <span class="keyword">private</span> <span class="type">IEnumerable</span>&lt;<span class="type">Claim</span>&gt; ParseClaimsFromJwt(<span class="keyword">string</span> jwt)
+        {
+            <span class="keyword">var</span> claims = <span class="keyword">new</span> <span class="type">List</span>&lt;<span class="type">Claim</span>&gt;();
+
+            <span class="comment">// JWT = Header.Payload.Signature — take the middle part</span>
+            <span class="keyword">var</span> payload = jwt.Split(<span class="string">"."</span>)[1];
+
+            <span class="comment">// Base64 strings must have length divisible by 4. JWT removes padding, so we add it back</span>
+            <span class="keyword">switch</span> (payload.Length % 4)
+            {
+                <span class="keyword">case</span> 2: payload += <span class="string">"=="</span>; <span class="keyword">break</span>;
+                <span class="keyword">case</span> 3: payload += <span class="string">"="</span>;  <span class="keyword">break</span>;
+            }
+
+            <span class="comment">// Decode the Base64 string to raw bytes (which represent JSON)</span>
+            <span class="keyword">var</span> jsonBytes = Convert.FromBase64String(payload);
+
+            <span class="comment">// Deserialize the bytes into a dictionary of key-value pairs</span>
+            <span class="keyword">var</span> keyValuePairs = JsonSerializer.Deserialize&lt;<span class="type">Dictionary</span>&lt;<span class="keyword">string</span>, <span class="type">JsonElement</span>&gt;&gt;(jsonBytes);
+
+            <span class="keyword">if</span> (keyValuePairs == <span class="keyword">null</span>) <span class="keyword">return</span> claims;
+
+            <span class="comment">// Convert each key-value pair into a Claim object</span>
+            <span class="keyword">foreach</span> (<span class="keyword">var</span> kvp <span class="keyword">in</span> keyValuePairs)
+            {
+                <span class="comment">// Some claims (like role) can be an array, handle both cases</span>
+                <span class="keyword">if</span> (kvp.Value.ValueKind == <span class="type">JsonValueKind</span>.Array)
+                {
+                    <span class="keyword">foreach</span> (<span class="keyword">var</span> element <span class="keyword">in</span> kvp.Value.EnumerateArray())
+                        claims.Add(<span class="keyword">new</span> <span class="type">Claim</span>(kvp.Key, element.ToString()));
+                }
+                <span class="keyword">else</span>
+                {
+                    claims.Add(<span class="keyword">new</span> <span class="type">Claim</span>(kvp.Key, kvp.Value.ToString()));
+                }
+            }
+            <span class="keyword">return</span> claims;
+        }
+    }
+}
+</code></pre>
+
+<h4>Key Concept Explanations:</h4>
+
+<h4>ClaimsIdentity vs ClaimsPrincipal vs AuthenticationState</h4>
+<table>
+  <tr><th>Class</th><th>Analogy</th><th>Role</th></tr>
+  <tr><td>ClaimsIdentity</td><td>The ID Card</td><td>Holds the user's claims (email, role) and how they were authenticated</td></tr>
+  <tr><td>ClaimsPrincipal</td><td>The Person holding the ID card</td><td>Wraps one or more ClaimsIdentity objects</td></tr>
+  <tr><td>AuthenticationState</td><td>The Security Checkpoint result</td><td>Wraps the ClaimsPrincipal — this is what Blazor uses</td></tr>
+</table>
+
+<div class="warning">
+  &#9888; <strong>Critical:</strong> <code>new ClaimsIdentity(claims, "jwt")</code> — The second argument <code>"jwt"</code> marks the user as <strong>authenticated</strong>. Without it (<code>new ClaimsIdentity(claims)</code>), even with claims, the user is treated as <strong>anonymous</strong>!
+</div>
+
+<div class="tip">
+  &#128161; <strong>Base64 Padding:</strong> JWT tokens intentionally strip the <code>=</code> padding characters from the Base64-encoded payload to keep URLs short. We add them back before decoding:
+  <br/>&#x25B6; length % 4 == 2 → add <code>==</code>
+  <br/>&#x25B6; length % 4 == 3 → add <code>=</code>
+  <br/>&#x25B6; length % 4 == 0 → no padding needed
+</div>
+
+<div class="tip">
+  &#128161; <strong>NotifyAuthenticationStateChanged:</strong> This is a built-in method from the base class <code>AuthenticationStateProvider</code>. Calling it immediately pushes the new auth state to all <code>AuthorizeView</code> and <code>CascadingAuthenticationState</code> components — no page refresh needed!
+</div>
+
+<hr/>
+
+<!-- STEP 7 -->
+<h2 id="step7">&#9318; Step 7: Register Services in Program.cs</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Register the auth services in the DI container so Blazor knows to use our custom provider for authentication.
+</div>
+
+<h3>File: EmployeeClient/Program.cs (complete)</h3>
+<pre><code><span class="keyword">using</span> EmployeeClient;
+<span class="keyword">using</span> EmployeeClient.Auth;
+<span class="keyword">using</span> Microsoft.AspNetCore.Components.Authorization;
+<span class="keyword">using</span> Microsoft.AspNetCore.Components.Web;
+<span class="keyword">using</span> Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+
+<span class="keyword">var</span> builder = <span class="type">WebAssemblyHostBuilder</span>.CreateDefault(args);
+builder.RootComponents.Add&lt;<span class="type">App</span>&gt;(<span class="string">"#app"</span>);
+builder.RootComponents.Add&lt;<span class="type">HeadOutlet</span>&gt;(<span class="string">"head::after"</span>);
+
+<span class="comment">// Configure HttpClient to point to the API</span>
+builder.Services.AddScoped(sp =&gt; <span class="keyword">new</span> <span class="type">HttpClient</span> 
+{ 
+    BaseAddress = <span class="keyword">new</span> <span class="type">Uri</span>(<span class="string">"https://localhost:7021/"</span>) 
+});
+
+<span class="comment">// Enable Blazor's authorization system</span>
+builder.Services.AddAuthorizationCore();
+
+<span class="comment">// Register CustomAuthStateProvider so it can be injected by its own type</span>
+builder.Services.AddScoped&lt;<span class="type">CustomAuthStateProvider</span>&gt;();
+
+<span class="comment">// Tell Blazor to use our CustomAuthStateProvider when it needs AuthenticationStateProvider</span>
+<span class="comment">// Using GetRequiredService ensures BOTH registrations use the SAME instance</span>
+builder.Services.AddScoped&lt;<span class="type">AuthenticationStateProvider</span>&gt;(sp =&gt; 
+    sp.GetRequiredService&lt;<span class="type">CustomAuthStateProvider</span>&gt;());
+
+<span class="keyword">await</span> builder.Build().RunAsync();
+</code></pre>
+
+<h4>Why Two Registrations?</h4>
+<div class="tip">
+  &#128161; We need two registrations:
+  <br/>1. <code>AddScoped&lt;CustomAuthStateProvider&gt;()</code> — so that <code>Login.razor</code> and <code>MainLayout.razor</code> can inject and call <code>NotifyUserLoggedIn()</code> / <code>NotifyUserLoggedOut()</code>
+  <br/>2. <code>AddScoped&lt;AuthenticationStateProvider&gt;(...)</code> — so that Blazor's built-in <code>CascadingAuthenticationState</code> uses our custom provider
+</div>
+<div class="warning">
+  &#9888; <strong>Important:</strong> Using <code>sp.GetRequiredService&lt;CustomAuthStateProvider&gt;()</code> ensures BOTH registrations resolve to the <strong>same object instance</strong>. If you write <code>AddScoped&lt;AuthenticationStateProvider, CustomAuthStateProvider&gt;()</code> instead, two separate instances are created — notifications (login/logout) won't reach the UI!
+</div>
+
+<hr/>
+
+<!-- STEP 8 -->
+<h2 id="step8">&#9319; Step 8: Update App.razor</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Wrap the entire app with Blazor's authentication infrastructure so every page knows the current auth state and protected routes can be enforced.
+</div>
+
+<h3>File: EmployeeClient/App.razor</h3>
+<pre><code>&lt;<span class="type">CascadingAuthenticationState</span>&gt;
+    &lt;<span class="type">Router</span> AppAssembly=<span class="string">"@typeof(App).Assembly"</span> NotFoundPage=<span class="string">"typeof(Pages.NotFound)"</span>&gt;
+        &lt;<span class="type">Found</span> Context=<span class="string">"routeData"</span>&gt;
+            &lt;<span class="type">AuthorizeRouteView</span> RouteData=<span class="string">"@routeData"</span> DefaultLayout=<span class="string">"@typeof(MainLayout)"</span>&gt;
+                &lt;<span class="type">NotAuthorized</span>&gt;
+                    &lt;p&gt;You are not authorized. Please &lt;a href=<span class="string">"/login"</span>&gt;login&lt;/a&gt;.&lt;/p&gt;
+                &lt;/NotAuthorized&gt;
+            &lt;/<span class="type">AuthorizeRouteView</span>&gt;
+            &lt;<span class="type">FocusOnNavigate</span> RouteData=<span class="string">"@routeData"</span> Selector=<span class="string">"h1"</span>/&gt;
+        &lt;/<span class="type">Found</span>&gt;
+    &lt;/<span class="type">Router</span>&gt;
+&lt;/<span class="type">CascadingAuthenticationState</span>&gt;
+</code></pre>
+
+<h4>Line-by-Line Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;CascadingAuthenticationState&gt;</span> — Makes the authentication state available to ALL child components in the tree via Blazor's cascading value mechanism. Every <code>AuthorizeView</code> inside can access the current user's auth state.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;AuthorizeRouteView&gt;</span> (replaces the default <code>&lt;RouteView&gt;</code>) — Checks if the target page requires authorization (via <code>@attribute [Authorize]</code>) before rendering it. If the user doesn't have access, shows <code>&lt;NotAuthorized&gt;</code> content instead.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;NotAuthorized&gt;</span> — Content shown when a user tries to access a page they're not authorized for. We show a friendly message with a link to the login page.</div>
+
+<table>
+  <tr><th>Component</th><th>Before</th><th>After</th></tr>
+  <tr><td>Wrapper</td><td>(none)</td><td>CascadingAuthenticationState</td></tr>
+  <tr><td>Route renderer</td><td>RouteView</td><td>AuthorizeRouteView</td></tr>
+</table>
+
+<hr/>
+
+<!-- STEP 9 -->
+<h2 id="step9">&#9320; Step 9: Update MainLayout.razor (Navigation + Auth)</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Make the navigation bar show different links depending on whether the user is logged in, and what role they have.
+</div>
+
+<h3>File: EmployeeClient/Layout/MainLayout.razor</h3>
+<pre><code>@inherits <span class="type">LayoutComponentBase</span>
+@inject <span class="type">IJSRuntime</span> JS
+@inject <span class="type">CustomAuthStateProvider</span> AuthStateProvider
+@inject <span class="type">NavigationManager</span> Nav
+
+&lt;div&gt;
+    &lt;nav class=<span class="string">"navbar navbar-expand navbar-dark bg-dark"</span>&gt;
+        &lt;a class=<span class="string">"navbar-brand"</span> href=<span class="string">""</span>&gt;Employee App&lt;/a&gt;
+        &lt;ul class=<span class="string">"navbar-nav"</span>&gt;
+
+            &lt;<span class="type">AuthorizeView</span>&gt;                           <span class="comment">&lt;!-- checks: is any user logged in? --&gt;</span>
+                &lt;<span class="type">Authorized</span>&gt;
+                    <span class="comment">&lt;!-- SHOWN TO ALL LOGGED IN USERS --&gt;</span>
+                    &lt;li class=<span class="string">"nav-item"</span>&gt;
+                        &lt;<span class="type">NavLink</span> class=<span class="string">"nav-link"</span> href=<span class="string">"employees"</span>&gt;Employee List&lt;/<span class="type">NavLink</span>&gt;
+                    &lt;/li&gt;
+
+                    <span class="comment">&lt;!-- NESTED: shown only to Admin --&gt;</span>
+                    &lt;<span class="type">AuthorizeView</span> Roles=<span class="string">"Admin"</span>&gt;
+                        &lt;<span class="type">Authorized</span> Context=<span class="string">"adminContext"</span>&gt;
+                            &lt;li class=<span class="string">"nav-item"</span>&gt;
+                                &lt;<span class="type">NavLink</span> class=<span class="string">"nav-link"</span> href=<span class="string">"add"</span>&gt;Add Employee&lt;/<span class="type">NavLink</span>&gt;
+                            &lt;/li&gt;
+                        &lt;/<span class="type">Authorized</span>&gt;
+                    &lt;/<span class="type">AuthorizeView</span>&gt;
+
+                    <span class="comment">&lt;!-- LOGOUT: shown to all logged in users --&gt;</span>
+                    &lt;li class=<span class="string">"nav-item"</span>&gt;
+                        &lt;button class=<span class="string">"btn btn-link nav-link"</span> @onclick=<span class="string">"HandleLogout"</span>&gt;Logout&lt;/button&gt;
+                    &lt;/li&gt;
+                &lt;/<span class="type">Authorized</span>&gt;
+
+                &lt;<span class="type">NotAuthorized</span>&gt;
+                    <span class="comment">&lt;!-- SHOWN WHEN NOT LOGGED IN --&gt;</span>
+                    &lt;li class=<span class="string">"nav-item"</span>&gt;
+                        &lt;<span class="type">NavLink</span> class=<span class="string">"nav-link"</span> href=<span class="string">"login"</span>&gt;Login&lt;/<span class="type">NavLink</span>&gt;
+                    &lt;/li&gt;
+                    &lt;li class=<span class="string">"nav-item"</span>&gt;
+                        &lt;<span class="type">NavLink</span> class=<span class="string">"nav-link"</span> href=<span class="string">"register"</span>&gt;Register&lt;/<span class="type">NavLink</span>&gt;
+                    &lt;/li&gt;
+                &lt;/<span class="type">NotAuthorized</span>&gt;
+            &lt;/<span class="type">AuthorizeView</span>&gt;
+
+        &lt;/ul&gt;
+    &lt;/nav&gt;
+
+    &lt;main&gt;
+        &lt;article class=<span class="string">"content px-4"</span>&gt;
+            @Body
+        &lt;/article&gt;
+    &lt;/main&gt;
+&lt;/div&gt;
+
+@code {
+    <span class="keyword">private async</span> <span class="type">Task</span> HandleLogout()
+    {
+        <span class="comment">// Remove the token from browser localStorage</span>
+        <span class="keyword">await</span> JS.InvokeVoidAsync(<span class="string">"localStorage.removeItem"</span>, <span class="string">"token"</span>);
+        <span class="comment">// Tell Blazor the user has logged out</span>
+        AuthStateProvider.NotifyUserLoggedOut();
+        <span class="comment">// Redirect to the login page</span>
+        Nav.NavigateTo(<span class="string">"login"</span>);
+    }
+}
+</code></pre>
+
+<h4>AuthorizeView Explained:</h4>
+<table>
+  <tr><th>Usage</th><th>Shows Authorized content when</th></tr>
+  <tr><td><code>&lt;AuthorizeView&gt;</code></td><td>User is logged in (any role)</td></tr>
+  <tr><td><code>&lt;AuthorizeView Roles="Admin"&gt;</code></td><td>User is logged in AND has "Admin" role</td></tr>
+  <tr><td><code>&lt;AuthorizeView Roles="Admin,User"&gt;</code></td><td>User is logged in AND has "Admin" OR "User" role</td></tr>
+</table>
+
+<div class="warning">
+  &#9888; <strong>Nested AuthorizeView Context:</strong> When nesting two <code>AuthorizeView</code> components, the inner <code>&lt;Authorized&gt;</code> block MUST have a different <code>Context</code> name to avoid ambiguity:
+  <br/><code>&lt;Authorized Context="adminContext"&gt;</code>
+</div>
+
+<div class="tip">
+  &#128161; <strong>NavMenu Rules Summary:</strong>
+  <ul>
+    <li>Not logged in → Login + Register visible</li>
+    <li>Logged in as User → Employee List + Logout visible</li>
+    <li>Logged in as Admin → Employee List + Add Employee + Logout visible</li>
+  </ul>
+</div>
+
+<hr/>
+
+<!-- STEP 10 -->
+<h2 id="step10">&#9321; Step 10: Send Token with API Requests</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Protected API endpoints require a JWT token in the request's Authorization header. We must attach the token saved in localStorage to every API call.
+</div>
+
+<h3>What is the Authorization Header?</h3>
+<div class="purpose">
+  Every HTTP request to a protected endpoint must include:<br/>
+  <code>Authorization: Bearer eyJhbGci...(the full JWT token)</code><br/>
+  The API reads this header, validates the token, and grants or denies access.
+</div>
+
+<h3>In Employees.razor (Manual approach):</h3>
+<pre><code>@inject <span class="type">IJSRuntime</span> JS
+
+@code {
+    <span class="keyword">protected override async</span> <span class="type">Task</span> OnInitializedAsync()
+    {
+        <span class="comment">// Step 1: Read token from localStorage</span>
+        <span class="keyword">var</span> token = <span class="keyword">await</span> JS.InvokeAsync&lt;<span class="keyword">string</span>&gt;(<span class="string">"localStorage.getItem"</span>, <span class="string">"token"</span>);
+
+        <span class="comment">// Step 2: Attach token to ALL future requests from this HttpClient instance</span>
+        Http.DefaultRequestHeaders.Authorization = 
+            <span class="keyword">new</span> System.Net.Http.Headers.<span class="type">AuthenticationHeaderValue</span>(<span class="string">"Bearer"</span>, token);
+
+        <span class="comment">// Step 3: Call the API — token is now included automatically</span>
+        EmployeeList = <span class="keyword">await</span> Http.GetFromJsonAsync&lt;<span class="type">List</span>&lt;<span class="type">EmployeeDto</span>&gt;&gt;(<span class="string">"api/employees"</span>) ?? <span class="keyword">new</span>();
+    }
+}
+</code></pre>
+
+<h4>Line-by-Line Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">JS.InvokeAsync&lt;string&gt;("localStorage.getItem", "token")</span> — Calls JavaScript's <code>localStorage.getItem("token")</code> from C#. Returns the JWT string we saved during login.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">new AuthenticationHeaderValue("Bearer", token)</span> — Creates the header value <code>Bearer eyJhbGci...</code>. "Bearer" is the standard scheme for JWT tokens.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">Http.DefaultRequestHeaders.Authorization = ...</span> — Sets the Authorization header on the HttpClient. Once set, ALL subsequent requests from this instance will include this header automatically.</div>
+
+<div class="tip">
+  &#128161; <strong>Note:</strong> This manual approach must be repeated in every component that calls a protected API endpoint. An alternative is to use a <strong>DelegatingHandler</strong> which automatically attaches the token to every request without repeating the code.
+</div>
+
+<hr/>
+
+<!-- STEP 11 -->
+<h2 id="step11">&#9322; Step 11: Role-Based Buttons in Employee List</h2>
+
+<div class="purpose">
+  <strong>Purpose:</strong> Show Edit and Delete buttons in the employee table, but only to users who have the permission to perform those actions based on their role.
+</div>
+
+<h3>API Authorization Rules (Reminder):</h3>
+<table>
+  <tr><th>Action</th><th>Who Can Do It</th></tr>
+  <tr><td>Edit (PUT)</td><td>Admin + User</td></tr>
+  <tr><td>Delete (DELETE)</td><td>Admin only</td></tr>
+</table>
+
+<h3>File: EmployeeClient/Pages/Employees.razor (Actions Column)</h3>
+<pre><code><span class="comment">&lt;!-- In &lt;thead&gt; --&gt;</span>
+&lt;th&gt;Actions&lt;/th&gt;
+
+<span class="comment">&lt;!-- In &lt;tbody&gt; @foreach loop --&gt;</span>
+&lt;td&gt;
+    <span class="comment">&lt;!-- Edit button: visible to Admin AND User --&gt;</span>
+    &lt;<span class="type">AuthorizeView</span> Roles=<span class="string">"Admin,User"</span>&gt;
+        &lt;<span class="type">Authorized</span> Context=<span class="string">"editCtx"</span>&gt;
+            &lt;<span class="type">NavLink</span> class=<span class="string">"btn btn-sm btn-warning"</span> 
+                     href=<span class="string">"@($"</span>edit/{emp.Id}<span class="string">")"</span>&gt;Edit&lt;/<span class="type">NavLink</span>&gt;
+        &lt;/<span class="type">Authorized</span>&gt;
+    &lt;/<span class="type">AuthorizeView</span>&gt;
+
+    <span class="comment">&lt;!-- Delete button: visible to Admin ONLY --&gt;</span>
+    &lt;<span class="type">AuthorizeView</span> Roles=<span class="string">"Admin"</span>&gt;
+        &lt;<span class="type">Authorized</span> Context=<span class="string">"deleteCtx"</span>&gt;
+            &lt;button class=<span class="string">"btn btn-sm btn-danger"</span> 
+                    @onclick=<span class="string">"()=&gt;HandleDelete(emp.Id)"</span>&gt;Delete&lt;/button&gt;
+        &lt;/<span class="type">Authorized</span>&gt;
+    &lt;/<span class="type">AuthorizeView</span>&gt;
+&lt;/td&gt;
+
+@code {
+    <span class="keyword">private async</span> <span class="type">Task</span> HandleDelete(<span class="keyword">int</span> id)
+    {
+        <span class="comment">// Read token and attach to header</span>
+        <span class="keyword">var</span> token = <span class="keyword">await</span> JS.InvokeAsync&lt;<span class="keyword">string</span>&gt;(<span class="string">"localStorage.getItem"</span>, <span class="string">"token"</span>);
+        Http.DefaultRequestHeaders.Authorization =
+            <span class="keyword">new</span> System.Net.Http.Headers.<span class="type">AuthenticationHeaderValue</span>(<span class="string">"Bearer"</span>, token);
+
+        <span class="comment">// Call DELETE endpoint</span>
+        <span class="keyword">var</span> response = <span class="keyword">await</span> Http.DeleteAsync(<span class="string">$"api/employees/{id}"</span>);
+
+        <span class="keyword">if</span> (response.IsSuccessStatusCode)
+        {
+            <span class="comment">// Remove from local list to update UI without re-fetching</span>
+            EmployeeList?.RemoveAll(e =&gt; e.Id == id);
+        }
+    }
+}
+</code></pre>
+
+<h4>Line-by-Line Explanation:</h4>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;AuthorizeView Roles="Admin,User"&gt;</span> — Shows Edit button only when the logged-in user's role is either "Admin" OR "User".</div>
+<div class="line-exp">&#x25B6; <span class="line-code">&lt;AuthorizeView Roles="Admin"&gt;</span> — Shows Delete button only when the logged-in user's role is "Admin".</div>
+<div class="line-exp">&#x25B6; <span class="line-code">Context="editCtx"</span> and <span class="line-code">Context="deleteCtx"</span> — Each nested AuthorizeView needs a unique Context name to avoid naming conflicts.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">href="@($"edit/{emp.Id}")"</span> — Dynamic route using C# string interpolation. Navigates to <code>/edit/5</code> (where 5 is the employee ID).</div>
+<div class="line-exp">&#x25B6; <span class="line-code">@onclick="()=&gt;HandleDelete(emp.Id)"</span> — Lambda expression that passes the current employee's ID to the delete method. Without the lambda, all delete buttons would share the same ID.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">Http.DeleteAsync($"api/employees/{id}")</span> — Sends an HTTP DELETE request to the API endpoint for the specific employee.</div>
+<div class="line-exp">&#x25B6; <span class="line-code">EmployeeList?.RemoveAll(e =&gt; e.Id == id)</span> — Removes the deleted employee from the in-memory list to update the UI instantly without making another GET request.</div>
+
+<hr/>
+
+<!-- SUMMARY -->
+<h2>&#9989; Summary — What We Built</h2>
+
+<table>
+  <tr><th>Step</th><th>What We Did</th><th>Files Changed</th></tr>
+  <tr><td>1</td><td>Configure HttpClient to point to the API</td><td>Program.cs</td></tr>
+  <tr><td>2</td><td>Add global @using directives</td><td>_Imports.razor</td></tr>
+  <tr><td>3</td><td>Create Login form page</td><td>Pages/Login.razor</td></tr>
+  <tr><td>4</td><td>Create Register form page</td><td>Pages/Register.razor</td></tr>
+  <tr><td>5</td><td>Save JWT token to localStorage after login</td><td>Pages/Login.razor</td></tr>
+  <tr><td>6</td><td>Create custom AuthenticationStateProvider</td><td>Auth/CustomAuthStateProvider.cs</td></tr>
+  <tr><td>7</td><td>Register auth services correctly</td><td>Program.cs</td></tr>
+  <tr><td>8</td><td>Wrap app with auth infrastructure</td><td>App.razor</td></tr>
+  <tr><td>9</td><td>Role-based NavMenu + Logout</td><td>Layout/MainLayout.razor</td></tr>
+  <tr><td>10</td><td>Attach JWT token to protected API calls</td><td>Pages/Employees.razor</td></tr>
+  <tr><td>11</td><td>Show Edit/Delete based on user role</td><td>Pages/Employees.razor</td></tr>
+</table>
+
+<h3>Final NavBar Behavior:</h3>
+<table>
+  <tr><th>User State</th><th>Visible Nav Items</th></tr>
+  <tr><td>Not logged in</td><td>Login, Register</td></tr>
+  <tr><td>Logged in as <strong>User</strong></td><td>Employee List, Logout</td></tr>
+  <tr><td>Logged in as <strong>Admin</strong></td><td>Employee List, Add Employee, Logout</td></tr>
+</table>
+
+<h3>Key Concepts Learned:</h3>
+<ul>
+  <li>&#128274; <strong>JWT Authentication</strong> — Token-based auth where the server issues a signed token the client stores and re-sends</li>
+  <li>&#128193; <strong>localStorage</strong> — Browser storage for persisting the token across page navigations</li>
+  <li>&#128100; <strong>AuthenticationStateProvider</strong> — The bridge between the JWT token and Blazor's auth system</li>
+  <li>&#127807; <strong>CascadingAuthenticationState</strong> — Makes auth state available to the entire component tree</li>
+  <li>&#128065; <strong>AuthorizeView</strong> — Conditionally shows/hides UI elements based on auth state and roles</li>
+  <li>&#127381; <strong>DI Instance Sharing</strong> — Using <code>GetRequiredService</code> to ensure both DI registrations share the same object</li>
+</ul>
+
+<hr/>
+<p style="text-align:center;color:#888;font-size:13px">
+  Generated for training purposes &nbsp;|&nbsp; EmployeeApp &nbsp;|&nbsp; .NET 10 &nbsp;|&nbsp; Blazor WebAssembly + ASP.NET Core Web API
+</p>
+
+</body>
+</html>
