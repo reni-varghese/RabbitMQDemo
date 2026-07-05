@@ -1,49 +1,49 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\reni\\Test\\EmployeeApp\\",
+  "WorkspaceRootPath": "E:\\reni\\EmployeeApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|c:\\reni\\test\\employeeapp\\employeeapp.api\\events\\employeeevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\events\\employeeevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|c:\\reni\\test\\employeeapp\\employeeapp.api\\employeeapp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\employeeapp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|c:\\reni\\test\\employeeapp\\employeeapp.api\\messaging\\ieventpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\messaging\\ieventpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|c:\\reni\\test\\employeeapp\\employeeapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|e:\\reni\\employeeapp\\employeeapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|c:\\reni\\test\\employeeapp\\employeeapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|e:\\reni\\employeeapp\\employeeapp.api\\messaging\\rabbitmqpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\messaging\\rabbitmqpublisher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|e:\\reni\\employeeapp\\employeeapp.api\\services\\employeeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\services\\employeeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|e:\\reni\\employeeapp\\employeeapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|e:\\reni\\employeeapp\\employeeapp.api\\events\\employeeevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\events\\employeeevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|e:\\reni\\employeeapp\\employeeapp.api\\employeeapp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{4FE86887-5370-BEE6-70F2-476C725D7719}|EmployeeApp.Api\\EmployeeApp.Api.csproj|solutionrelative:employeeapp.api\\employeeapp.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\app.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\reni\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\app.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:EmployeeApp.NgClient\\src\\app\\app.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\reni\\Test\\EmployeeApp\\RabbitMQ_HostedService_Guide.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\reni\\EmployeeApp\\RabbitMQ_HostedService_Guide.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RabbitMQ_HostedService_Guide.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
@@ -54,58 +54,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "RabbitMQ_HostedService_Guide.html",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\RabbitMQ_HostedService_Guide.html",
-              "RelativeDocumentMoniker": "RabbitMQ_HostedService_Guide.html",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\RabbitMQ_HostedService_Guide.html",
-              "RelativeToolTip": "RabbitMQ_HostedService_Guide.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAALwCAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-07-04T10:50:46.357Z",
+              "DocumentIndex": 2,
+              "Title": "EmployeeService.cs",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Services\\EmployeeService.cs",
+              "RelativeDocumentMoniker": "EmployeeApp.Api\\Services\\EmployeeService.cs",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Services\\EmployeeService.cs",
+              "RelativeToolTip": "EmployeeApp.Api\\Services\\EmployeeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-05T15:32:36.303Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "RabbitMqPublisher.cs",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Messaging\\RabbitMqPublisher.cs",
+              "RelativeDocumentMoniker": "EmployeeApp.Api\\Messaging\\RabbitMqPublisher.cs",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Messaging\\RabbitMqPublisher.cs",
+              "RelativeToolTip": "EmployeeApp.Api\\Messaging\\RabbitMqPublisher.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADwAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-05T14:41:51.785Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "EmployeeEvent.cs",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\Events\\EmployeeEvent.cs",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Events\\EmployeeEvent.cs",
               "RelativeDocumentMoniker": "EmployeeApp.Api\\Events\\EmployeeEvent.cs",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\Events\\EmployeeEvent.cs",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Events\\EmployeeEvent.cs",
               "RelativeToolTip": "EmployeeApp.Api\\Events\\EmployeeEvent.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAYwAcAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-04T10:21:03.595Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "EmployeeApp.Api",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
+              "DocumentIndex": 5,
+              "Title": "EmployeeApp.Api.csproj",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
               "RelativeDocumentMoniker": "EmployeeApp.Api\\EmployeeApp.Api.csproj",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
               "RelativeToolTip": "EmployeeApp.Api\\EmployeeApp.Api.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-07-04T10:20:21.587Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "IEventPublisher.cs",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\Messaging\\IEventPublisher.cs",
-              "RelativeDocumentMoniker": "EmployeeApp.Api\\Messaging\\IEventPublisher.cs",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\Messaging\\IEventPublisher.cs",
-              "RelativeToolTip": "EmployeeApp.Api\\Messaging\\IEventPublisher.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-04T06:36:55.06Z",
               "EditorCaption": ""
             },
             {
@@ -114,87 +114,91 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\appsettings.json",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\appsettings.json",
               "RelativeDocumentMoniker": "EmployeeApp.Api\\appsettings.json",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\appsettings.json",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\appsettings.json",
               "RelativeToolTip": "EmployeeApp.Api\\appsettings.json",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABYAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-06-29T17:58:50.427Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\Program.cs",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Program.cs",
               "RelativeDocumentMoniker": "EmployeeApp.Api\\Program.cs",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\Program.cs",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\Program.cs",
               "RelativeToolTip": "EmployeeApp.Api\\Program.cs",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAAAD0AAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAADoAAAAAAAAAAAAAAEoAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T17:24:09.574Z"
+              "WhenOpened": "2026-06-25T17:24:09.574Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 11,
+              "Title": "RabbitMQ_HostedService_Guide.html",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\RabbitMQ_HostedService_Guide.html",
+              "RelativeDocumentMoniker": "RabbitMQ_HostedService_Guide.html",
+              "ToolTip": "E:\\reni\\EmployeeApp\\RabbitMQ_HostedService_Guide.html",
+              "RelativeToolTip": "RabbitMQ_HostedService_Guide.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALwCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-07-04T10:50:46.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "employee-list.ts",
               "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts",
-              "RelativeDocumentMoniker": "EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts",
               "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts",
-              "RelativeToolTip": "EmployeeApp.NgClient\\src\\app\\employee\\employee-list\\employee-list.ts",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2026-06-25T17:16:53.098Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "login.html",
               "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html",
-              "RelativeDocumentMoniker": "EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html",
               "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html",
-              "RelativeToolTip": "EmployeeApp.NgClient\\src\\app\\auth\\login\\login.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2026-06-25T16:35:09.92Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "login.ts",
               "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts",
-              "RelativeDocumentMoniker": "EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts",
               "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts",
-              "RelativeToolTip": "EmployeeApp.NgClient\\src\\app\\auth\\login\\login.ts",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAcAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2026-06-25T16:34:38.622Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "auth-service.ts",
               "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts",
-              "RelativeDocumentMoniker": "EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts",
               "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts",
-              "RelativeToolTip": "EmployeeApp.NgClient\\src\\app\\auth\\auth-service.ts",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAzwBAAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2026-06-25T16:16:41.937Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "app.ts",
-              "DocumentMoniker": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\app.ts",
+              "DocumentMoniker": "E:\\reni\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\app.ts",
               "RelativeDocumentMoniker": "EmployeeApp.NgClient\\src\\app\\app.ts",
-              "ToolTip": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\app.ts",
+              "ToolTip": "E:\\reni\\EmployeeApp\\EmployeeApp.NgClient\\src\\app\\app.ts",
               "RelativeToolTip": "EmployeeApp.NgClient\\src\\app\\app.ts",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAIBJwAoAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-06-25T16:06:06.518Z"
+              "WhenOpened": "2026-06-25T16:06:06.518Z",
+              "EditorCaption": ""
             }
           ]
         }

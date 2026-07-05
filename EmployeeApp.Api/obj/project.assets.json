@@ -3333,28 +3333,28 @@
       "Microsoft.AspNetCore.OpenApi >= 10.0.8",
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.9",
       "Microsoft.EntityFrameworkCore.Tools >= 10.0.9",
-      "RabbitMQ.client >= 7.2.1",
+      "RabbitMQ.Client >= 7.2.1",
       "system.identitymodel.tokens.jwt >= 8.19.1"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\311046\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\reni_\\.nuget\\packages\\": {},
+    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
+      "projectUniqueName": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
       "projectName": "EmployeeApp.Api",
-      "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
-      "packagesPath": "C:\\Users\\311046\\.nuget\\packages\\",
-      "outputPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Api\\obj\\",
+      "projectPath": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\EmployeeApp.Api.csproj",
+      "packagesPath": "C:\\Users\\reni_\\.nuget\\packages\\",
+      "outputPath": "E:\\reni\\EmployeeApp\\EmployeeApp.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\311046\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\reni_\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3370,8 +3370,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
-              "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj"
+            "E:\\reni\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
+              "projectPath": "E:\\reni\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj"
             }
           }
         }
@@ -3419,7 +3419,7 @@
             "target": "Package",
             "version": "[10.0.9, )"
           },
-          "RabbitMQ.client": {
+          "RabbitMQ.Client": {
             "target": "Package",
             "version": "[7.2.1, )"
           },

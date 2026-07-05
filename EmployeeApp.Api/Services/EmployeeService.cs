@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using EmployeeApp.Api.Messaging;
 using EmployeeApp.Api.Models;
 using EmployeeApp.Api.Models.Dtos;
 using EmployeeApp.Api.Repositories;
 
 namespace EmployeeApp.Api.Services
 {
-    public class EmployeeService(IEmployeeRepository repository,IMapper mapper) : IEmployeeService
+    public class EmployeeService(IEmployeeRepository repository,IMapper mapper,RabbitMqPublisher publisher) : IEmployeeService
     {
 
         
@@ -15,13 +16,32 @@ namespace EmployeeApp.Api.Services
             var employee=mapper.Map<Employee>(entity);
 
            var savedEntity= await repository.CreateAsync(employee);
-           return mapper.Map<EmployeeDto>(savedEntity);
+            var result=mapper.Map<EmployeeDto>(savedEntity);
+
+            await publisher.PublishAsync(new Events.EmployeeEvent
+            {
+                EventType = "Created",
+                EmployeeId = result.Id,
+                EmployeeName = result.Name,
+                OccurredAt = DateTime.UtcNow
+            });
+
+            return result;
         }
 
         public async Task<EmployeeDto> DeleteAsync(int id)
         {
             var deleted=await repository.DeleteAsync(id);
-            return mapper.Map<EmployeeDto>(deleted);
+            var result= mapper.Map<EmployeeDto>(deleted);
+
+            await publisher.PublishAsync(new Events.EmployeeEvent
+            {
+                EventType = "Deleted",
+                EmployeeId = result.Id,
+                EmployeeName = result.Name,
+                OccurredAt= DateTime.UtcNow
+
+            });
         }
 
         public async Task<List<EmployeeDto>> GetAllAsync()

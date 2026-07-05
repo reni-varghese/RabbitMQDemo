@@ -1,5 +1,6 @@
 using EmployeeApp.Api.Data;
 using EmployeeApp.Api.Mappings;
+using EmployeeApp.Api.Messaging;
 using EmployeeApp.Api.Middlewares;
 using EmployeeApp.Api.Repositories;
 using EmployeeApp.Api.Services;
@@ -71,6 +72,7 @@ builder.Services.AddCors(cfg =>
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddSingleton<RabbitMqPublisher>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
