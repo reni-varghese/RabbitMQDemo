@@ -3,14 +3,20 @@ using EmployeeApp.Api.Messaging;
 using EmployeeApp.Api.Models;
 using EmployeeApp.Api.Models.Dtos;
 using EmployeeApp.Api.Repositories;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace EmployeeApp.Api.Services
 {
-    public class EmployeeService(IEmployeeRepository repository,IMapper mapper,RabbitMqPublisher publisher) : IEmployeeService
+    public class EmployeeService(IEmployeeRepository repository,IMapper mapper,
+        RabbitMqPublisher publisher,IDistributedCache cache) : IEmployeeService
     {
 
-        
-
+        private const string EmployeeListCacheKey = "employees:all";
+        private static readonly DistributedCacheEntryOptions cacheOptions = new()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        };
         public async Task<EmployeeDto> AddAsync(EmployeeDto entity)
         {
             var employee=mapper.Map<Employee>(entity);
@@ -42,11 +48,26 @@ namespace EmployeeApp.Api.Services
                 OccurredAt= DateTime.UtcNow
 
             });
+            return result;
         }
 
         public async Task<List<EmployeeDto>> GetAllAsync()
         {
-            return mapper.Map<List<EmployeeDto>>(await repository.GetAllAsync());
+            var cached = await cache.GetStringAsync(EmployeeListCacheKey);
+            if (!string.IsNullOrEmpty(cached))
+            {
+               
+                var cachedEmployees = JsonSerializer.Deserialize<List<EmployeeDto>>(cached);
+                if (cachedEmployees is not null)
+                {
+                    return cachedEmployees;
+                }
+            }
+            var employees= mapper.Map<List<EmployeeDto>>(await repository.GetAllAsync());
+            await cache.SetStringAsync(EmployeeListCacheKey,
+                JsonSerializer.Serialize(employees),cacheOptions);
+            return employees;
+                
         }
 
         public async Task<EmployeeDto> GetByIdAsync(int id)

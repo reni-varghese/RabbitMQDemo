@@ -1,0 +1,398 @@
+﻿<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word">
+<meta name="Originator" content="Microsoft Word">
+<!--[if gte mso 9]>
+<xml>
+ <w:WordDocument>
+  <w:View>Print</w:View>
+  <w:Zoom>100</w:Zoom>
+  <w:DoNotOptimizeForBrowser/>
+ </w:WordDocument>
+</xml>
+<![endif]-->
+<title>Implementing Caching in EmployeeApp using Microsoft Garnet</title>
+<style>
+  body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; color:#222222; line-height:1.4; margin: 40px; }
+  h1 { font-size: 22pt; color:#1F4E79; border-bottom: 2px solid #1F4E79; padding-bottom: 6px; }
+  h2 { font-size: 16pt; color:#2E74B5; margin-top: 30px; border-bottom: 1px solid #BDD7EE; padding-bottom: 4px; }
+  h3 { font-size: 12.5pt; color:#2E74B5; margin-top:18px; }
+  p { margin: 8px 0; }
+  ul, ol { margin: 6px 0 14px 0; }
+  li { margin-bottom: 4px; }
+  pre { background:#F2F2F2; border:1px solid #CCCCCC; padding:10px 12px; font-family: Consolas, 'Courier New', monospace; font-size: 9.5pt; white-space: pre; }
+  table { border-collapse: collapse; width:100%; margin: 10px 0 20px 0; }
+  th, td { border: 1px solid #BFBFBF; padding: 6px 8px; font-size:10pt; text-align:left; vertical-align:top; }
+  th { background:#DEEAF6; }
+  code { font-family: Consolas, monospace; background:#EFEFEF; padding:1px 4px; }
+  .note { background:#FFF4CE; border-left:4px solid #FFC000; padding:8px 12px; margin:14px 0; }
+  .toc { background:#F7F9FC; border:1px solid #D6E2F0; padding:12px 18px; }
+</style>
+</head>
+<body>
+
+<h1>Implementing Caching in EmployeeApp using Microsoft Garnet</h1>
+<p><em>Step-by-step implementation guide &mdash; Employee List Caching</em></p>
+<p><strong>Project:</strong> EmployeeApp.Api&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Target Framework:</strong> .NET 10&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Cache Server:</strong> Microsoft Garnet (RESP/Redis-protocol compatible)&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Client Library:</strong> Microsoft.Extensions.Caching.StackExchangeRedis</p>
+
+<div class="toc">
+<strong>Contents</strong>
+<ol>
+<li>Overview</li>
+<li>Prerequisites</li>
+<li>Step 1 &ndash; Run the Garnet Cache Server</li>
+<li>Step 2 &ndash; Add the Caching NuGet Package</li>
+<li>Step 3 &ndash; Configure appsettings.json</li>
+<li>Step 4 &ndash; Create GarnetOptions.cs</li>
+<li>Step 5 &ndash; Register the Distributed Cache in Program.cs</li>
+<li>Step 6 &ndash; Cache the Employee List (Cache-Aside Pattern)</li>
+<li>Step 7 &ndash; Invalidate the Cache on Create / Update / Delete</li>
+<li>Full Updated EmployeeService.cs</li>
+<li>Step 8 &ndash; Verify Caching Works</li>
+<li>Production Considerations</li>
+<li>Quick Reference &ndash; Commands</li>
+<li>Summary</li>
+</ol>
+</div>
+
+<h2>1. Overview</h2>
+<p>
+<strong>Microsoft Garnet</strong> is an open-source, high-performance remote cache-store created by Microsoft Research
+(<code>microsoft/garnet</code> on GitHub). It implements the RESP (REdis Serialization Protocol), which means any
+standard Redis client &mdash; including the official .NET client used by ASP.NET Core &mdash; can talk to it without
+any code changes. That is why this guide uses <code>Microsoft.Extensions.Caching.StackExchangeRedis</code> as the
+"caching tool": it is the standard <code>IDistributedCache</code> provider for ASP.NET Core, and it works against
+Garnet exactly as it would against Redis.
+</p>
+<p>In this guide you will:</p>
+<ul>
+<li>Run a Garnet cache server (Docker or a .NET global tool)</li>
+<li>Add the <code>Microsoft.Extensions.Caching.StackExchangeRedis</code> package to <code>EmployeeApp.Api</code></li>
+<li>Configure the connection using <code>appsettings.json</code> and a strongly typed options class (the same pattern already used for <code>RabbitMqOptions</code>)</li>
+<li>Register <code>IDistributedCache</code> in <code>Program.cs</code></li>
+<li>Cache the employee list in <code>EmployeeService.GetAllAsync()</code> using the cache-aside pattern</li>
+<li>Invalidate the cached list whenever an employee is created, updated, or deleted</li>
+<li>Verify the cache is working using a RESP-compatible CLI</li>
+</ul>
+<div class="note">
+<strong>Note:</strong> This guide only caches the <em>employee list</em> (<code>GetAllAsync</code>), as requested.
+<code>GetByIdAsync</code> is left untouched, but the same pattern can be applied to it later if needed.
+</div>
+
+<h2>2. Prerequisites</h2>
+<ul>
+<li>.NET 10 SDK (already installed &ndash; matches the project's <code>net10.0</code> target framework)</li>
+<li>Visual Studio 2026 (already in use)</li>
+<li>Docker Desktop &mdash; <em>or</em> the ability to install .NET global tools &mdash; to run Garnet locally</li>
+<li>The existing <code>EmployeeApp.Api</code> project, with <code>EmployeeService</code>, <code>IEmployeeService</code>, <code>EmployeeController</code>, and the RabbitMQ options pattern already in place</li>
+</ul>
+
+<h2>3. Step 1 &ndash; Run the Garnet Cache Server</h2>
+<p>Garnet's default listening port is <strong>3278</strong>. Choose one of the following ways to run it locally.</p>
+
+<h3>Option A: Docker (recommended)</h3>
+<pre>docker run -d --name garnet-cache -p 3278:3278 ghcr.io/microsoft/garnet</pre>
+
+<h3>Option B: .NET Global Tool</h3>
+<pre>dotnet tool install --global Microsoft.Garnet
+garnet-server --port 3278</pre>
+<p>
+This is what "Microsoft.Garnet" refers to in your request: it is the package/tool that provides the actual cache
+<em>server</em> process. Your ASP.NET Core app does not reference this package directly &mdash; it just connects to
+the running server over the network, the same way it already connects to RabbitMQ.
+</p>
+
+<h2>4. Step 2 &ndash; Add the Caching NuGet Package</h2>
+<p>From the solution root (<code>C:\reni\Test\EmployeeApp</code>), add the Redis-protocol distributed cache client to <code>EmployeeApp.Api</code>:</p>
+<pre>dotnet add EmployeeApp.Api\EmployeeApp.Api.csproj package Microsoft.Extensions.Caching.StackExchangeRedis</pre>
+<p>This registers an <code>IDistributedCache</code> implementation backed by StackExchange.Redis, fully compatible with Garnet's RESP protocol.</p>
+
+<h2>5. Step 3 &ndash; Configure appsettings.json</h2>
+<p>Add a new <code>Garnet</code> section next to the existing <code>RabbitMq</code> section in <code>EmployeeApp.Api\appsettings.json</code>:</p>
+<pre>  "RabbitMq": {
+	"HostName": "localhost",
+	"Port": 5672,
+	"UserName": "guest",
+	"Password": "guest",
+	"VirtualHost": "/",
+	"Exchange": "employee.events",
+	"EmployeeQueue": "employee.events.Queue"
+  },
+  "Garnet": {
+	"ConnectionString": "localhost:3278",
+	"InstanceName": "EmployeeApp:"
+  }</pre>
+
+<h2>6. Step 4 &ndash; Create GarnetOptions.cs</h2>
+<p>Add <code>EmployeeApp.Api\Options\GarnetOptions.cs</code>, mirroring the existing <code>RabbitMqOptions.cs</code> style:</p>
+<pre>namespace EmployeeApp.Api.Options
+{
+	public class GarnetOptions
+	{
+		public string ConnectionString { get; set; } = "localhost:3278";
+		public string InstanceName { get; set; } = "EmployeeApp:";
+	}
+}</pre>
+
+<h2>7. Step 5 &ndash; Register the Distributed Cache in Program.cs</h2>
+<p>Add this near the existing <code>builder.Services.Configure&lt;RabbitMqOptions&gt;(...)</code> line:</p>
+<pre>using EmployeeApp.Api.Options;
+
+builder.Services.Configure&lt;GarnetOptions&gt;(builder.Configuration.GetSection("Garnet"));
+builder.Services.AddStackExchangeRedisCache(options =&gt;
+{
+	var garnetOptions = builder.Configuration.GetSection("Garnet").Get&lt;GarnetOptions&gt;() ?? new GarnetOptions();
+	options.Configuration = garnetOptions.ConnectionString;
+	options.InstanceName = garnetOptions.InstanceName;
+});</pre>
+
+<h2>8. Step 6 &ndash; Cache the Employee List (Cache-Aside Pattern)</h2>
+<p>
+Inject <code>IDistributedCache</code> into <code>EmployeeService</code> and update <code>GetAllAsync()</code> to
+check the cache first. On a miss, load from the repository, map to DTOs, then store the serialized result with an
+expiration:
+</p>
+<pre>public class EmployeeService(
+	IEmployeeRepository repository,
+	IMapper mapper,
+	RabbitMqPublisher publisher,
+	IDistributedCache cache) : IEmployeeService
+{
+	private const string EmployeeListCacheKey = "employees:all";
+
+	private static readonly DistributedCacheEntryOptions CacheOptions = new()
+	{
+		AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+	};
+
+	public async Task&lt;List&lt;EmployeeDto&gt;&gt; GetAllAsync()
+	{
+		var cached = await cache.GetStringAsync(EmployeeListCacheKey);
+		if (!string.IsNullOrEmpty(cached))
+		{
+			return JsonSerializer.Deserialize&lt;List&lt;EmployeeDto&gt;&gt;(cached)!;
+		}
+
+		var employees = mapper.Map&lt;List&lt;EmployeeDto&gt;&gt;(await repository.GetAllAsync());
+
+		await cache.SetStringAsync(
+			EmployeeListCacheKey,
+			JsonSerializer.Serialize(employees),
+			CacheOptions);
+
+		return employees;
+	}</pre>
+<p>Add these <code>using</code> directives to <code>EmployeeService.cs</code>:</p>
+<pre>using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;</pre>
+
+<h2>9. Step 7 &ndash; Invalidate the Cache on Create / Update / Delete</h2>
+<p>
+To keep the cached list from going stale, remove the cache entry whenever an employee is added, updated, or deleted,
+so the next <code>GetAllAsync()</code> call repopulates it from the database:
+</p>
+<pre>public async Task&lt;EmployeeDto&gt; AddAsync(EmployeeDto entity)
+{
+	var employee = mapper.Map&lt;Employee&gt;(entity);
+	var savedEntity = await repository.CreateAsync(employee);
+	var result = mapper.Map&lt;EmployeeDto&gt;(savedEntity);
+
+	await cache.RemoveAsync(EmployeeListCacheKey);
+
+	await publisher.PublishAsync(new Events.EmployeeEvent
+	{
+		EventType = "Created",
+		EmployeeId = result.Id,
+		EmployeeName = result.Name,
+		OccurredAt = DateTime.UtcNow
+	});
+
+	return result;
+}
+
+public async Task&lt;EmployeeDto&gt; UpdateAsync(int id, EmployeeDto entity)
+{
+	var emp = mapper.Map&lt;Employee&gt;(entity);
+	var updated = await repository.UpdateAsync(id, emp);
+
+	await cache.RemoveAsync(EmployeeListCacheKey);
+
+	return mapper.Map&lt;EmployeeDto&gt;(updated);
+}
+
+public async Task&lt;EmployeeDto&gt; DeleteAsync(int id)
+{
+	var deleted = await repository.DeleteAsync(id);
+	var result = mapper.Map&lt;EmployeeDto&gt;(deleted);
+
+	await cache.RemoveAsync(EmployeeListCacheKey);
+
+	await publisher.PublishAsync(new Events.EmployeeEvent
+	{
+		EventType = "Deleted",
+		EmployeeId = result.Id,
+		EmployeeName = result.Name,
+		OccurredAt = DateTime.UtcNow
+	});
+
+	return result;
+}</pre>
+
+<h2>10. Full Updated EmployeeService.cs</h2>
+<p>For reference, here is the complete file with caching applied:</p>
+<pre>using AutoMapper;
+using EmployeeApp.Api.Messaging;
+using EmployeeApp.Api.Models;
+using EmployeeApp.Api.Models.Dtos;
+using EmployeeApp.Api.Repositories;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
+
+namespace EmployeeApp.Api.Services
+{
+	public class EmployeeService(
+		IEmployeeRepository repository,
+		IMapper mapper,
+		RabbitMqPublisher publisher,
+		IDistributedCache cache) : IEmployeeService
+	{
+		private const string EmployeeListCacheKey = "employees:all";
+
+		private static readonly DistributedCacheEntryOptions CacheOptions = new()
+		{
+			AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+		};
+
+		public async Task&lt;EmployeeDto&gt; AddAsync(EmployeeDto entity)
+		{
+			var employee = mapper.Map&lt;Employee&gt;(entity);
+
+			var savedEntity = await repository.CreateAsync(employee);
+			var result = mapper.Map&lt;EmployeeDto&gt;(savedEntity);
+
+			await cache.RemoveAsync(EmployeeListCacheKey);
+
+			await publisher.PublishAsync(new Events.EmployeeEvent
+			{
+				EventType = "Created",
+				EmployeeId = result.Id,
+				EmployeeName = result.Name,
+				OccurredAt = DateTime.UtcNow
+			});
+
+			return result;
+		}
+
+		public async Task&lt;EmployeeDto&gt; DeleteAsync(int id)
+		{
+			var deleted = await repository.DeleteAsync(id);
+			var result = mapper.Map&lt;EmployeeDto&gt;(deleted);
+
+			await cache.RemoveAsync(EmployeeListCacheKey);
+
+			await publisher.PublishAsync(new Events.EmployeeEvent
+			{
+				EventType = "Deleted",
+				EmployeeId = result.Id,
+				EmployeeName = result.Name,
+				OccurredAt = DateTime.UtcNow
+			});
+
+			return result;
+		}
+
+		public async Task&lt;List&lt;EmployeeDto&gt;&gt; GetAllAsync()
+		{
+			var cached = await cache.GetStringAsync(EmployeeListCacheKey);
+			if (!string.IsNullOrEmpty(cached))
+			{
+				return JsonSerializer.Deserialize&lt;List&lt;EmployeeDto&gt;&gt;(cached)!;
+			}
+
+			var employees = mapper.Map&lt;List&lt;EmployeeDto&gt;&gt;(await repository.GetAllAsync());
+
+			await cache.SetStringAsync(
+				EmployeeListCacheKey,
+				JsonSerializer.Serialize(employees),
+				CacheOptions);
+
+			return employees;
+		}
+
+		public async Task&lt;EmployeeDto&gt; GetByIdAsync(int id)
+		{
+			return mapper.Map&lt;EmployeeDto&gt;(await repository.GetByIdAsync(id));
+		}
+
+		public async Task&lt;EmployeeDto&gt; UpdateAsync(int id, EmployeeDto entity)
+		{
+			var emp = mapper.Map&lt;Employee&gt;(entity);
+			var updated = await repository.UpdateAsync(id, emp);
+
+			await cache.RemoveAsync(EmployeeListCacheKey);
+
+			return mapper.Map&lt;EmployeeDto&gt;(updated);
+		}
+	}
+}</pre>
+
+<h2>11. Step 8 &ndash; Verify Caching Works</h2>
+<ol>
+<li>Start the Garnet server (Step 1) and run <code>EmployeeApp.Api</code>.</li>
+<li>Call <code>GET /api/employees</code> twice (Swagger/OpenAPI UI, Postman, or the Blazor client). The first call is a cache miss (hits SQL Server); the second should be noticeably faster (served from Garnet).</li>
+<li>Inspect the cache directly using a RESP-compatible CLI:</li>
+</ol>
+<pre>docker exec -it garnet-cache redis-cli -p 3278
+KEYS *
+GET employees:all</pre>
+<ol start="4">
+<li>Create, update, or delete an employee, then repeat step 3 &ndash; the <code>employees:all</code> key should be gone until the next <code>GetAll</code> call repopulates it.</li>
+</ol>
+<div class="note">
+<strong>Tip:</strong> Add temporary <code>ILogger</code> statements ("Cache hit" / "Cache miss") inside <code>GetAllAsync()</code> if you want to see the behavior in the console/Serilog output without inspecting Garnet directly.
+</div>
+
+<h2>12. Production Considerations</h2>
+<ul>
+<li><strong>Connection resiliency:</strong> configure retry/backoff (e.g., <code>ConfigurationOptions.AbortOnConnectFail = false</code>) so transient Garnet outages don't crash requests.</li>
+<li><strong>Key naming:</strong> keep using an <code>InstanceName</code> prefix (e.g., <code>EmployeeApp:</code>) to avoid collisions if the same Garnet instance is shared across apps/environments.</li>
+<li><strong>Expiration strategy:</strong> tune <code>AbsoluteExpirationRelativeToNow</code> (and/or add a sliding expiration) based on how often employee data changes.</li>
+<li><strong>Serialization:</strong> <code>System.Text.Json</code> is fine to start; consider a binary format (e.g., MessagePack) later for larger payloads.</li>
+<li><strong>Security:</strong> enable Garnet authentication (<code>--auth Password --password &lt;secret&gt;</code>) and store the secret via User Secrets/Key Vault, not in <code>appsettings.json</code>.</li>
+<li><strong>Cache stampede protection:</strong> if load is high, guard the cache-miss path with a lock/semaphore per key to avoid many concurrent requests hitting SQL Server simultaneously.</li>
+<li><strong>Cache invalidation scope:</strong> if you later cache <code>GetByIdAsync</code> too, make sure per-id keys are also invalidated on update/delete.</li>
+<li><strong>Monitoring:</strong> track cache hit/miss ratio and Garnet server health alongside your existing Serilog sinks.</li>
+</ul>
+
+<h2>13. Quick Reference &ndash; Commands</h2>
+<table>
+<tr><th>Action</th><th>Command</th></tr>
+<tr><td>Start Garnet (Docker)</td><td><code>docker run -d --name garnet-cache -p 3278:3278 ghcr.io/microsoft/garnet</code></td></tr>
+<tr><td>Start Garnet (.NET global tool)</td><td><code>garnet-server --port 3278</code></td></tr>
+<tr><td>Add caching package</td><td><code>dotnet add EmployeeApp.Api\EmployeeApp.Api.csproj package Microsoft.Extensions.Caching.StackExchangeRedis</code></td></tr>
+<tr><td>Open a RESP CLI session</td><td><code>docker exec -it garnet-cache redis-cli -p 3278</code></td></tr>
+<tr><td>List all cache keys</td><td><code>KEYS *</code></td></tr>
+<tr><td>Inspect the cached employee list</td><td><code>GET employees:all</code></td></tr>
+<tr><td>Clear the whole cache</td><td><code>FLUSHDB</code></td></tr>
+<tr><td>Stop the Garnet container</td><td><code>docker stop garnet-cache</code></td></tr>
+</table>
+
+<h2>14. Summary</h2>
+<p>
+By running Microsoft Garnet as a RESP-compatible cache server and wiring it into ASP.NET Core's standard
+<code>IDistributedCache</code> abstraction via <code>Microsoft.Extensions.Caching.StackExchangeRedis</code>, the
+employee list served by <code>EmployeeService.GetAllAsync()</code> is cached for a configurable window and
+automatically invalidated on create, update, and delete &mdash; reducing load on SQL Server while keeping the data
+consistent, following the same configuration-driven pattern already established for RabbitMQ in this project.
+</p>
+
+<div class="note">
+<strong>How to use this file:</strong> Double-click to open it in Microsoft Word (it may show a one-time format
+confirmation prompt &mdash; choose "Yes"/"OK"). Once open, use <strong>File &gt; Save As</strong> and choose
+<strong>Word Document (*.docx)</strong> if you want to convert it to the native format.
+</div>
+
+</body>
+</html>

@@ -24,7 +24,7 @@ namespace EmployeeApp.Api.Messaging
                 VirtualHost = rabbitMqConfig["VirtualHost"]!    
 
             };
-            _queueName = rabbitMqConfig["QueueName"]!;
+            _queueName = rabbitMqConfig["EmployeeQueue"]!;
             _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
             _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 

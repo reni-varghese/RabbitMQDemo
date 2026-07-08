@@ -1,0 +1,1006 @@
+﻿# -*- coding: utf-8 -*-
+"""
+Generates MassTransit_Migration_Guide.pdf - a detailed, code-accurate guide
+for migrating EmployeeApp's RabbitMQ.Client messaging to MassTransit.
+"""
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_LEFT, TA_CENTER
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
+    Preformatted, PageBreak, ListFlowable, ListItem, HRFlowable, KeepTogether
+)
+from datetime import datetime
+
+OUTPUT = r"C:\reni\Test\EmployeeApp\MassTransit_Migration_Guide.pdf"
+
+# ---------------------------------------------------------------- styles --
+ss = getSampleStyleSheet()
+
+NAVY = colors.HexColor("#1F3864")
+TEAL = colors.HexColor("#0E7C7B")
+ORANGE = colors.HexColor("#B45F06")
+RED = colors.HexColor("#B71C1C")
+LIGHTGRAY = colors.HexColor("#F4F5F7")
+CODEBG = colors.HexColor("#282C34")
+CODEFG = colors.HexColor("#E6E6E6")
+BORDER = colors.HexColor("#D0D3D8")
+NOTEBG = colors.HexColor("#EAF3F3")
+WARNBG = colors.HexColor("#FCEFE3")
+CRITBG = colors.HexColor("#FBEAEA")
+
+def style(name, **kw):
+    base = kw.pop("parent", ss["Normal"])
+    return ParagraphStyle(name, parent=base, **kw)
+
+CoverTitle = style("CoverTitle", fontName="Helvetica-Bold", fontSize=27, leading=32, textColor=NAVY, alignment=TA_CENTER, spaceAfter=10)
+CoverSub = style("CoverSub", fontName="Helvetica", fontSize=14, leading=18, textColor=colors.HexColor("#444444"), alignment=TA_CENTER, spaceAfter=6)
+CoverMeta = style("CoverMeta", fontName="Helvetica", fontSize=10.5, leading=14, textColor=colors.HexColor("#666666"), alignment=TA_CENTER)
+
+H1 = style("H1", fontName="Helvetica-Bold", fontSize=17, leading=21, textColor=NAVY, spaceBefore=18, spaceAfter=10)
+H2 = style("H2", fontName="Helvetica-Bold", fontSize=13, leading=16, textColor=TEAL, spaceBefore=14, spaceAfter=7)
+H3 = style("H3", fontName="Helvetica-Bold", fontSize=11, leading=14, textColor=colors.HexColor("#333333"), spaceBefore=10, spaceAfter=5)
+BODY = style("BODY", fontName="Helvetica", fontSize=9.7, leading=14.2, textColor=colors.HexColor("#222222"), spaceAfter=7, alignment=TA_LEFT)
+BODY_BOLD = style("BODY_BOLD", parent=BODY, fontName="Helvetica-Bold")
+SMALL = style("SMALL", parent=BODY, fontSize=8.6, leading=11.5, textColor=colors.HexColor("#555555"))
+BULLET = style("BULLET", parent=BODY, leftIndent=14, bulletIndent=2, spaceAfter=4)
+CAPTION = style("CAPTION", fontName="Helvetica-Oblique", fontSize=8.5, leading=11, textColor=colors.HexColor("#666666"), spaceBefore=2, spaceAfter=10)
+TOCITEM = style("TOCITEM", fontName="Helvetica", fontSize=10.5, leading=19, textColor=colors.HexColor("#222222"))
+CODE = ParagraphStyle("CODE", fontName="Courier", fontSize=7.6, leading=10.2, textColor=CODEFG)
+TAGLABEL_NEW = style("TAGLABEL_NEW", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=colors.white)
+TAGLABEL_OLD = style("TAGLABEL_OLD", fontName="Helvetica-Bold", fontSize=9, leading=12, textColor=colors.white)
+
+story = []
+
+# ------------------------------------------------------------- helpers ----
+def h1(text): story.append(Paragraph(text, H1))
+def h2(text): story.append(Paragraph(text, H2))
+def h3(text): story.append(Paragraph(text, H3))
+def p(text): story.append(Paragraph(text, BODY))
+def small(text): story.append(Paragraph(text, SMALL))
+def caption(text): story.append(Paragraph(text, CAPTION))
+def spacer(h=6): story.append(Spacer(1, h))
+def hr(): story.append(HRFlowable(width="100%", thickness=0.6, color=BORDER, spaceBefore=8, spaceAfter=10))
+
+def bullets(items):
+    story.append(ListFlowable(
+        [ListItem(Paragraph(i, BULLET), bulletColor=TEAL) for i in items],
+        bulletType="bullet", start="circle", leftIndent=16
+    ))
+    spacer(4)
+
+def numbered(items):
+    story.append(ListFlowable(
+        [ListItem(Paragraph(i, BULLET)) for i in items],
+        bulletType="1", leftIndent=16
+    ))
+    spacer(4)
+
+def file_tag(path, kind="file"):
+    color = {"new": TEAL, "modify": ORANGE, "delete": RED, "file": NAVY}[kind]
+    label = {"new": "NEW FILE", "modify": "MODIFY", "delete": "DELETE", "file": "FILE"}[kind]
+    t = Table([[Paragraph(f"{label}", TAGLABEL_NEW), Paragraph(f"<font face='Courier' size=9.5>{path}</font>", BODY_BOLD)]],
+              colWidths=[1.55*cm, 15.2*cm])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (0,0), color),
+        ("BACKGROUND", (1,0), (1,0), colors.HexColor("#F0F0F0")),
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("ALIGN", (0,0), (0,0), "CENTER"),
+        ("TOPPADDING", (0,0), (-1,-1), 5),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 5),
+        ("LEFTPADDING", (1,0), (1,0), 8),
+        ("BOX", (0,0), (-1,-1), 0.5, BORDER),
+    ]))
+    story.append(t)
+    spacer(2)
+
+def code(text, lang=""):
+    pre = Preformatted(text.strip("\n"), CODE)
+    t = Table([[pre]], colWidths=[16.8*cm])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,-1), CODEBG),
+        ("BOX", (0,0), (-1,-1), 0.75, colors.HexColor("#1B1E24")),
+        ("TOPPADDING", (0,0), (-1,-1), 8),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 8),
+        ("LEFTPADDING", (0,0), (-1,-1), 10),
+        ("RIGHTPADDING", (0,0), (-1,-1), 10),
+    ]))
+    story.append(t)
+    spacer(9)
+
+def callout(title, text, kind="note"):
+    bg = {"note": NOTEBG, "warn": WARNBG, "crit": CRITBG}[kind]
+    bar = {"note": TEAL, "warn": ORANGE, "crit": RED}[kind]
+    icon = {"note": "NOTE", "warn": "IMPORTANT", "crit": "CRITICAL"}[kind]
+    inner = Table([[Paragraph(f"<b>{icon}: {title}</b><br/><br/>{text}", BODY)]], colWidths=[16.4*cm])
+    inner.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,-1), bg),
+        ("BOX", (0,0), (-1,-1), 0, colors.white),
+        ("LEFTPADDING", (0,0), (-1,-1), 12),
+        ("RIGHTPADDING", (0,0), (-1,-1), 12),
+        ("TOPPADDING", (0,0), (-1,-1), 9),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 9),
+    ]))
+    outer = Table([[inner]], colWidths=[16.8*cm])
+    outer.setStyle(TableStyle([
+        ("LINEBEFORE", (0,0), (0,0), 3.5, bar),
+        ("TOPPADDING", (0,0), (-1,-1), 0),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 0),
+        ("LEFTPADDING", (0,0), (-1,-1), 0),
+    ]))
+    story.append(outer)
+    spacer(10)
+
+def compare_table(rows, col_headers=("Before (RabbitMQ.Client)", "After (MassTransit)")):
+    data = [[Paragraph(f"<b>{col_headers[0]}</b>", BODY_BOLD), Paragraph(f"<b>{col_headers[1]}</b>", BODY_BOLD)]]
+    for a, b in rows:
+        data.append([Paragraph(a, SMALL), Paragraph(b, SMALL)])
+    t = Table(data, colWidths=[8.2*cm, 8.6*cm], repeatRows=1)
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), NAVY),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+        ("GRID", (0,0), (-1,-1), 0.5, BORDER),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ("LEFTPADDING", (0,0), (-1,-1), 8),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, LIGHTGRAY]),
+    ]))
+    story.append(t)
+    spacer(10)
+
+def simple_table(headers, rows, widths=None):
+    data = [[Paragraph(f"<b>{h}</b>", BODY_BOLD) for h in headers]] + \
+           [[Paragraph(c, SMALL) for c in r] for r in rows]
+    t = Table(data, colWidths=widths, repeatRows=1)
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), TEAL),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+        ("GRID", (0,0), (-1,-1), 0.5, BORDER),
+        ("VALIGN", (0,0), (-1,-1), "TOP"),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+        ("LEFTPADDING", (0,0), (-1,-1), 8),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.white, LIGHTGRAY]),
+    ]))
+    story.append(t)
+    spacer(10)
+
+def step_header(num, title):
+    t = Table([[Paragraph(f"STEP {num}", TAGLABEL_NEW), Paragraph(f"<b>{title}</b>", style('SH', parent=BODY, fontName='Helvetica-Bold', fontSize=12, textColor=NAVY))]],
+              colWidths=[2.1*cm, 14.7*cm])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (0,0), NAVY),
+        ("ALIGN", (0,0), (0,0), "CENTER"),
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("TOPPADDING", (0,0), (-1,-1), 7),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 7),
+        ("LEFTPADDING", (1,0), (1,0), 10),
+        ("BOX", (0,0), (-1,-1), 0.5, NAVY),
+    ]))
+    spacer(14)
+    story.append(t)
+    spacer(8)
+
+# =================================================================
+# COVER PAGE
+# =================================================================
+spacer(70)
+story.append(Paragraph("EmployeeApp", style("Brand", fontName="Helvetica-Bold", fontSize=13, textColor=TEAL, alignment=TA_CENTER, spaceAfter=26)))
+story.append(Paragraph("Migrating RabbitMQ Messaging<br/>to MassTransit", CoverTitle))
+spacer(8)
+story.append(Paragraph("A complete, code-accurate implementation guide covering package changes,<br/>publisher/consumer conversion, DI registration, and verification steps.", CoverSub))
+spacer(40)
+hr()
+story.append(Paragraph(
+    f"Target project: <b>EmployeeApp.Api</b> (.NET 10)<br/>"
+    f"Current transport: <b>RabbitMQ.Client 7.2.1</b> &nbsp;&rarr;&nbsp; Target: <b>MassTransit 8.5.10 + MassTransit.RabbitMQ 8.5.10</b><br/>"
+    f"Generated: {datetime.now().strftime('%d %B %Y')}",
+    CoverMeta))
+spacer(6)
+hr()
+story.append(PageBreak())
+
+# =================================================================
+# TABLE OF CONTENTS (manual, no live page numbers)
+# =================================================================
+h1("Contents")
+toc_items = [
+    "1.  Executive Summary",
+    "2.  Current Messaging Architecture (As-Is)",
+    "3.  Important: MassTransit Licensing &mdash; Choosing the Right Version",
+    "4.  Why Migrate to MassTransit",
+    "5.  Target Architecture (To-Be)",
+    "6.  Step 1 &mdash; Update NuGet Package References",
+    "7.  Step 2 &mdash; Keep / Adjust the Message Contract (EmployeeEvent)",
+    "8.  Step 3 &mdash; Replace the Publisher with IPublishEndpoint",
+    "9.  Step 4 &mdash; Convert the Consumer to IConsumer&lt;EmployeeEvent&gt;",
+    "10. Step 5 &mdash; Register MassTransit in Program.cs",
+    "11. Step 6 &mdash; Update appsettings.json",
+    "12. Step 7 &mdash; Remove Obsolete Files",
+    "13. Step 8 &mdash; Build, Run and Verify",
+    "14. Optional Enhancements (Retry, Outbox, Strongly-Typed Events)",
+    "15. Full File-by-File Change Summary",
+    "16. Rollback Plan",
+    "17. Key Takeaways",
+]
+for item in toc_items:
+    story.append(Paragraph(item, TOCITEM))
+story.append(PageBreak())
+
+# =================================================================
+# 1. EXECUTIVE SUMMARY
+# =================================================================
+h1("1. Executive Summary")
+p("EmployeeApp.Api currently talks to RabbitMQ directly through the low-level <b>RabbitMQ.Client</b> library. "
+  "The API project owns two hand-written classes &mdash; <font face='Courier'>RabbitMqPublisher</font> and "
+  "<font face='Courier'>EmployeeEventConsumer</font> &mdash; that each open their own connection/channel, declare the queue, "
+  "serialize/deserialize JSON manually, and manage acknowledgements by hand.")
+p("This guide walks through replacing that hand-rolled plumbing with <b>MassTransit</b>, a service-bus abstraction that sits on top of "
+  "RabbitMQ (and other transports) and gives you connection management, retries, serialization, queue/exchange topology, and consumer "
+  "dispatch out of the box &mdash; all configured through one DI extension, <font face='Courier'>AddMassTransit</font>.")
+p("The result: two custom classes are deleted, <font face='Courier'>EmployeeService</font> publishes through a single injected interface, "
+  "and the consumer becomes a small, testable class with no manual connection code at all.")
+spacer(4)
+simple_table(
+    ["Aspect", "Today (RabbitMQ.Client)", "After migration (MassTransit)"],
+    [
+        ["Publisher", "Custom class opens its own connection/channel in the constructor", "Inject IPublishEndpoint, call PublishAsync(message)"],
+        ["Consumer", "BackgroundService with AsyncEventingBasicConsumer + manual ack", "IConsumer&lt;EmployeeEvent&gt; with one Consume method"],
+        ["Connection mgmt", "Manual CreateConnectionAsync / CreateChannelAsync / Dispose", "Handled automatically by the MassTransit bus"],
+        ["Serialization", "Manual JsonSerializer.Serialize / Deserialize", "Automatic (System.Text.Json under the hood)"],
+        ["Retries on failure", "None &mdash; a throw in the handler crashes the receive loop", "Built-in retry / redelivery policies"],
+        ["Queue/exchange setup", "Manual QueueDeclareAsync calls in two places", "Automatic topology via ReceiveEndpoint configuration"],
+    ],
+    widths=[3.6*cm, 6.6*cm, 6.6*cm]
+)
+callout("Scope of this guide",
+        "This guide only changes the <b>messaging</b> layer (publisher, consumer, DI registration, packages). "
+        "Controllers, repositories, EF Core, Identity/JWT, AutoMapper and the Garnet/Redis distributed cache are untouched.",
+        "note")
+
+# =================================================================
+# 2. CURRENT ARCHITECTURE
+# =================================================================
+h1("2. Current Messaging Architecture (As-Is)")
+p("Four files currently make up the messaging path in <font face='Courier'>EmployeeApp.Api</font>:")
+simple_table(
+    ["File", "Responsibility today"],
+    [
+        ["Messaging/RabbitMqPublisher.cs", "Opens a RabbitMQ connection/channel in its constructor, declares the queue, and exposes PublishAsync(EmployeeEvent) which serializes to JSON and calls BasicPublishAsync."],
+        ["Messaging/EmployeeEventConsumer.cs", "A BackgroundService. StartAsync opens a second connection/channel; ExecuteAsync declares the same queue again, attaches an AsyncEventingBasicConsumer, deserializes the JSON body, logs it, and manually acknowledges each message."],
+        ["Options/RabbitMqOptions.cs", "A POCO (HostName, Port, UserName, Password, MyProperty) registered via Configure&lt;RabbitMqOptions&gt;, but never actually injected anywhere &mdash; both classes re-read IConfiguration directly instead."],
+        ["Events/EmployeeEvent.cs", "The plain message contract: EventType, EmployeeId, EmployeeName, OccurredAt."],
+    ],
+    widths=[6.2*cm, 10.6*cm]
+)
+h3("How it is wired up (Program.cs)")
+code(
+"""builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
+...
+builder.Services.AddSingleton<RabbitMqPublisher>();
+builder.Services.AddHostedService<EmployeeEventConsumer>();"""
+)
+h3("Where it is used (EmployeeService.cs)")
+p("The publisher is injected directly into <font face='Courier'>EmployeeService</font> and called after a create or delete:")
+code(
+"""public class EmployeeService(IEmployeeRepository repository, IMapper mapper,
+    RabbitMqPublisher publisher, IDistributedCache cache) : IEmployeeService
+{
+    public async Task<EmployeeDto> AddAsync(EmployeeDto entity)
+    {
+        ...
+        await publisher.PublishAsync(new Events.EmployeeEvent
+        {
+            EventType = "Created",
+            EmployeeId = result.Id,
+            EmployeeName = result.Name,
+            OccurredAt = DateTime.UtcNow
+        });
+        return result;
+    }
+
+    public async Task<EmployeeDto> DeleteAsync(int id)
+    {
+        ...
+        await publisher.PublishAsync(new Events.EmployeeEvent
+        {
+            EventType = "Deleted",
+            EmployeeId = result.Id,
+            EmployeeName = result.Name,
+            OccurredAt = DateTime.UtcNow
+        });
+        return result;
+    }
+}"""
+)
+h3("Current configuration (appsettings.json)")
+code(
+"""\"RabbitMq\": {
+  \"HostName\": \"localhost\",
+  \"Port\": 5672,
+  \"UserName\": \"guest\",
+  \"Password\": \"guest\",
+  \"VirtualHost\": \"/\",
+  \"Exchange\": \"employee.events\",
+  \"EmployeeQueue\": \"employee.events.Queue\"
+}"""
+)
+callout("Two real bugs this migration fixes for free",
+        "(1) <font face='Courier'>RabbitMqPublisher</font> and <font face='Courier'>EmployeeEventConsumer</font> each open a "
+        "<b>separate</b> connection/channel instead of sharing one &mdash; doubling connection overhead. "
+        "(2) If the consumer's handler throws, there is <b>no retry policy</b> and the message is never acknowledged, "
+        "which can stall the queue. MassTransit's shared bus connection and built-in retry pipeline solve both.",
+        "warn")
+
+# =================================================================
+# 3. LICENSING
+# =================================================================
+h1("3. Important: MassTransit Licensing &mdash; Choosing the Right Version")
+p("At the time of writing, NuGet reports the \u201clatest\u201d MassTransit package as <b>9.1.2</b>. However, starting with the "
+  "<b>9.0.0</b> release, MassTransit changed its licensing model. The package's own description now states:")
+callout("From the official MassTransit NuGet package description (v9.x)",
+        "\u201cMassTransit is a commercial product that must be licensed. Learn more about licensing options at Massient. "
+        "<b>Earlier version of MassTransit are still available under a permissive open source license.</b>\u201d",
+        "crit")
+p("In other words: <b>MassTransit 9.x requires a paid commercial license to use.</b> The last release published under the "
+  "permissive Apache-2.0 open-source license is the <b>8.x</b> line, which ended at version <b>8.5.10</b>.")
+p("Unless your organization has already purchased a MassTransit license, this guide targets the free, open-source "
+  "<b>8.5.10</b> release for both <font face='Courier'>MassTransit</font> and <font face='Courier'>MassTransit.RabbitMQ</font>. "
+  "The configuration API shown in this document (AddMassTransit, UsingRabbitMq, IConsumer&lt;T&gt;, IPublishEndpoint) has been "
+  "stable and unchanged across the entire 8.x line, so this guide applies whether you are currently on 8.0 or 8.5.x.")
+simple_table(
+    ["Package line", "License", "Recommended for this guide"],
+    [
+        ["8.0.0 &ndash; 8.5.10", "Apache-2.0 (free, open source)", "Yes &mdash; use 8.5.10 (latest free release)"],
+        ["9.0.0 and later", "Commercial &mdash; requires a paid license", "Only if you intend to purchase a license"],
+    ],
+    widths=[4.2*cm, 6.4*cm, 6.2*cm]
+)
+callout("Action required before Step 1",
+        "When you add the packages in Step 1, explicitly pin the version to <b>8.5.10</b>. Do not use \u201cinstall latest\u201d "
+        "in the NuGet Package Manager, since that will pull the commercially-licensed 9.x line.",
+        "warn")
+
+# =================================================================
+# 4. WHY MIGRATE
+# =================================================================
+h1("4. Why Migrate to MassTransit")
+bullets([
+    "<b>One shared bus connection</b> instead of two independently-managed connections (publisher + consumer each opened their own).",
+    "<b>Automatic retry &amp; error handling</b> &mdash; failed message processing can be retried with a backoff policy, and poison messages are moved to a "
+    "<font face='Courier'>_error</font> queue instead of silently stalling consumption.",
+    "<b>No manual queue/connection lifecycle code</b> &mdash; MassTransit registers its own IHostedService that starts/stops the bus with the app.",
+    "<b>Strongly-typed consumers</b> (<font face='Courier'>IConsumer&lt;EmployeeEvent&gt;</font>) instead of parsing raw byte arrays.",
+    "<b>Transport independence</b> &mdash; the same publish/consume code would work against Azure Service Bus or Amazon SQS if you ever changed transports.",
+    "<b>Built-in test harness</b> (<font face='Courier'>MassTransit.TestFramework</font>) so consumers can be unit tested without a real broker.",
+])
+
+# =================================================================
+# 5. TARGET ARCHITECTURE
+# =================================================================
+h1("5. Target Architecture (To-Be)")
+p("After migration, the messaging call path looks like this:")
+code(
+"""EmployeeService.AddAsync()/DeleteAsync()
+        |
+        v
+  IPublishEndpoint.Publish<EmployeeEvent>()   (MassTransit abstraction)
+        |
+        v
+  MassTransit RabbitMQ transport
+        |  publishes to a topic exchange named after the message type
+        v
+  RabbitMQ broker (exchange: EmployeeApp.Api.Events:EmployeeEvent)
+        |  bound queue: employee.events.Queue
+        v
+  MassTransit receive pipeline (retry, deserialize)
+        |
+        v
+  EmployeeEventConsumer : IConsumer<EmployeeEvent>
+        |
+        v
+  Consume(ConsumeContext<EmployeeEvent> context)  -> logs the event"""
+)
+compare_table([
+    ("RabbitMqPublisher (custom class, IDisposable, owns a connection)", "IPublishEndpoint (built-in MassTransit interface, injected directly)"),
+    ("EmployeeEventConsumer : BackgroundService (owns a connection, manual consumer loop)", "EmployeeEventConsumer : IConsumer&lt;EmployeeEvent&gt; (plain class, no connection code)"),
+    ("Program.cs: AddSingleton&lt;RabbitMqPublisher&gt;() + AddHostedService&lt;EmployeeEventConsumer&gt;()", "Program.cs: builder.Services.AddMassTransit(x =&gt; ...) configures both sides in one call"),
+    ("RabbitMqOptions.cs bound but unused", "Removed &mdash; RabbitMq section is read directly inside the AddMassTransit configuration delegate"),
+])
+
+# =================================================================
+# 6. STEP 1 - PACKAGES
+# =================================================================
+story.append(PageBreak())
+step_header(1, "Update NuGet Package References")
+p("Open <font face='Courier'>EmployeeApp.Api.csproj</font> and make two changes: remove the raw "
+  "<font face='Courier'>RabbitMQ.Client</font> package (MassTransit's RabbitMQ transport package brings in the client library "
+  "it needs transitively) and add the two MassTransit packages pinned to <b>8.5.10</b>.")
+file_tag("EmployeeApp.Api\\EmployeeApp.Api.csproj", "modify")
+compare_table([
+    ('<font face="Courier">&lt;PackageReference Include="RabbitMQ.Client" Version="7.2.1" /&gt;</font>',
+     '<font face="Courier">&lt;PackageReference Include="MassTransit" Version="8.5.10" /&gt;<br/>'
+     '&lt;PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" /&gt;</font>'),
+], col_headers=("Remove", "Add"))
+h3("Using the Package Manager Console instead")
+p("Equivalent commands if you prefer the console over editing the .csproj by hand:")
+code(
+"""Remove-Package RabbitMQ.Client -ProjectName EmployeeApp.Api
+Install-Package MassTransit -Version 8.5.10 -ProjectName EmployeeApp.Api
+Install-Package MassTransit.RabbitMQ -Version 8.5.10 -ProjectName EmployeeApp.Api"""
+)
+callout("Why remove RabbitMQ.Client directly?",
+        "MassTransit.RabbitMQ already depends on the correct compatible RabbitMQ.Client version internally. Keeping a separate, "
+        "manually-pinned RabbitMQ.Client reference alongside it can cause a version mismatch during restore. Let MassTransit.RabbitMQ "
+        "own that transitive dependency.",
+        "note")
+
+# =================================================================
+# 7. STEP 2 - MESSAGE CONTRACT
+# =================================================================
+story.append(PageBreak())
+step_header(2, "Keep / Adjust the Message Contract (EmployeeEvent)")
+p("MassTransit can publish and consume any plain C# class or interface &mdash; there is no base class or attribute required. "
+  "Your existing <font face='Courier'>EmployeeEvent</font> contract needs <b>no structural changes</b> to work with MassTransit:")
+file_tag("EmployeeApp.Api\\Events\\EmployeeEvent.cs", "file")
+code(
+"""namespace EmployeeApp.Api.Events
+{
+    public class EmployeeEvent
+    {
+        public string EventType { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; }
+        public DateTime OccurredAt { get; set; }
+    }
+}"""
+)
+p("This is the <b>minimal-change path</b>: keep a single message type and use the existing "
+  "<font face='Courier'>EventType</font> string (\"Created\" / \"Deleted\") as a discriminator, exactly as today. "
+  "Section 14 (Optional Enhancements) shows the MassTransit-idiomatic alternative of splitting this into two strongly-typed "
+  "messages (<font face='Courier'>EmployeeCreated</font> / <font face='Courier'>EmployeeDeleted</font>) if you want to adopt it later &mdash; "
+  "that step is optional and can be done independently, after the core migration below is working.")
+callout("Message name and the auto-generated exchange",
+        "By convention, MassTransit derives the RabbitMQ <b>exchange name</b> for a published message from its fully-qualified "
+        "type name, e.g. <font face='Courier'>EmployeeApp.Api.Events:EmployeeEvent</font>. You do not need to declare this "
+        "exchange yourself &mdash; it is created automatically the first time the message type is published or consumed.",
+        "note")
+
+# =================================================================
+# 8. STEP 3 - PUBLISHER
+# =================================================================
+story.append(PageBreak())
+step_header(3, "Replace the Publisher with IPublishEndpoint")
+p("Delete the custom publisher class entirely and inject MassTransit's built-in "
+  "<font face='Courier'>IPublishEndpoint</font> into <font face='Courier'>EmployeeService</font> instead.")
+file_tag("EmployeeApp.Api\\Messaging\\RabbitMqPublisher.cs", "delete")
+p("The entire file below is removed &mdash; its constructor logic (opening a connection, creating a channel, declaring the queue) "
+  "and its <font face='Courier'>PublishAsync</font> method are both replaced by MassTransit's built-in publish pipeline:")
+code(
+"""// DELETE THIS ENTIRE FILE
+public class RabbitMqPublisher : IDisposable
+{
+    private readonly IConnection _connection;
+    private readonly IChannel _channel;
+    private readonly string _queueName;
+
+    public RabbitMqPublisher(IConfiguration config) { /* manual connection setup */ }
+    public void Dispose() { /* manual close */ }
+    public async Task PublishAsync(EmployeeEvent employeeEvent) { /* manual serialize + BasicPublishAsync */ }
+}"""
+)
+file_tag("EmployeeApp.Api\\Services\\EmployeeService.cs", "modify")
+p("Change the constructor parameter from <font face='Courier'>RabbitMqPublisher publisher</font> to "
+  "<font face='Courier'>IPublishEndpoint publishEndpoint</font>, and change every "
+  "<font face='Courier'>publisher.PublishAsync(...)</font> call to <font face='Courier'>publishEndpoint.Publish(...)</font>:")
+compare_table([
+    ('<font face="Courier">using EmployeeApp.Api.Messaging;<br/><br/>'
+     'public class EmployeeService(IEmployeeRepository repository, IMapper mapper,<br/>'
+     '&nbsp;&nbsp;RabbitMqPublisher publisher, IDistributedCache cache) : IEmployeeService</font>',
+     '<font face="Courier">using MassTransit;<br/><br/>'
+     'public class EmployeeService(IEmployeeRepository repository, IMapper mapper,<br/>'
+     '&nbsp;&nbsp;IPublishEndpoint publishEndpoint, IDistributedCache cache) : IEmployeeService</font>'),
+    ('<font face="Courier">await publisher.PublishAsync(new Events.EmployeeEvent<br/>'
+     '{<br/>&nbsp;&nbsp;EventType = "Created", ...<br/>});</font>',
+     '<font face="Courier">await publishEndpoint.Publish(new Events.EmployeeEvent<br/>'
+     '{<br/>&nbsp;&nbsp;EventType = "Created", ...<br/>});</font>'),
+])
+p("Full updated file:")
+code(
+"""using AutoMapper;
+using EmployeeApp.Api.Models;
+using EmployeeApp.Api.Models.Dtos;
+using EmployeeApp.Api.Repositories;
+using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
+
+namespace EmployeeApp.Api.Services
+{
+    public class EmployeeService(IEmployeeRepository repository, IMapper mapper,
+        IPublishEndpoint publishEndpoint, IDistributedCache cache) : IEmployeeService
+    {
+        private const string EmployeeListCacheKey = "employees:all";
+        private static readonly DistributedCacheEntryOptions cacheOptions = new()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        };
+
+        public async Task<EmployeeDto> AddAsync(EmployeeDto entity)
+        {
+            var employee = mapper.Map<Employee>(entity);
+            var savedEntity = await repository.CreateAsync(employee);
+            var result = mapper.Map<EmployeeDto>(savedEntity);
+
+            await publishEndpoint.Publish(new Events.EmployeeEvent
+            {
+                EventType = "Created",
+                EmployeeId = result.Id,
+                EmployeeName = result.Name,
+                OccurredAt = DateTime.UtcNow
+            });
+
+            return result;
+        }
+
+        public async Task<EmployeeDto> DeleteAsync(int id)
+        {
+            var deleted = await repository.DeleteAsync(id);
+            var result = mapper.Map<EmployeeDto>(deleted);
+
+            await publishEndpoint.Publish(new Events.EmployeeEvent
+            {
+                EventType = "Deleted",
+                EmployeeId = result.Id,
+                EmployeeName = result.Name,
+                OccurredAt = DateTime.UtcNow
+            });
+
+            return result;
+        }
+
+        // GetAllAsync, GetByIdAsync, UpdateAsync are unchanged - no messaging involved
+    }
+}"""
+)
+callout("Why IPublishEndpoint and not IBus?",
+        "MassTransit exposes both <font face='Courier'>IBus</font> (the full bus, can send/publish) and "
+        "<font face='Courier'>IPublishEndpoint</font> (publish-only). Since EmployeeService only ever publishes events and never "
+        "sends targeted commands, injecting the narrower <font face='Courier'>IPublishEndpoint</font> is the recommended practice: "
+        "it makes the dependency's intent explicit and is easier to substitute in unit tests.",
+        "note")
+
+# =================================================================
+# 9. STEP 4 - CONSUMER
+# =================================================================
+story.append(PageBreak())
+step_header(4, "Convert the Consumer to IConsumer<EmployeeEvent>")
+p("The <font face='Courier'>BackgroundService</font>-based consumer, with its manual connection handling and acknowledgement "
+  "logic, is replaced by a plain class that implements MassTransit's <font face='Courier'>IConsumer&lt;T&gt;</font> interface. "
+  "MassTransit's bus takes care of opening the connection, declaring the queue, binding it to the correct exchange, "
+  "deserializing the message, invoking your consumer, and acknowledging (or retrying/dead-lettering) on your behalf.")
+file_tag("EmployeeApp.Api\\Messaging\\EmployeeEventConsumer.cs", "modify")
+p("Replace the entire contents of the file with:")
+code(
+"""using EmployeeApp.Api.Events;
+using MassTransit;
+
+namespace EmployeeApp.Api.Messaging
+{
+    public class EmployeeEventConsumer : IConsumer<EmployeeEvent>
+    {
+        private readonly ILogger<EmployeeEventConsumer> _logger;
+
+        public EmployeeEventConsumer(ILogger<EmployeeEventConsumer> logger)
+        {
+            _logger = logger;
+        }
+
+        public Task Consume(ConsumeContext<EmployeeEvent> context)
+        {
+            var employeeEvent = context.Message;
+
+            _logger.LogInformation("Employee Event {Type} {Id}, {Name}, {Time}",
+                employeeEvent.EventType, employeeEvent.EmployeeId,
+                employeeEvent.EmployeeName, employeeEvent.OccurredAt);
+
+            return Task.CompletedTask;
+        }
+    }
+}"""
+)
+h3("Side-by-side: what disappeared and why")
+simple_table(
+    ["Removed code", "Replaced by"],
+    [
+        ["StartAsync opening a ConnectionFactory / IConnection / IChannel", "The MassTransit bus (configured once in Program.cs) owns the single shared connection"],
+        ["ExecuteAsync calling QueueDeclareAsync for \u201cemployee.events.Queue\u201d", "The ReceiveEndpoint(\u201cemployee.events.Queue\u201d, ...) configuration in Program.cs (Step 5) declares and binds the queue"],
+        ["AsyncEventingBasicConsumer + ReceivedAsync event handler", "The single Consume(ConsumeContext&lt;EmployeeEvent&gt;) method &mdash; MassTransit dispatches to it per message"],
+        ["Encoding.UTF8.GetString(...) + JsonSerializer.Deserialize<...>", "context.Message is already a deserialized, strongly-typed EmployeeEvent"],
+        ["await _channel.BasicAckAsync(eventArgs.DeliveryTag, false)", "Automatic: MassTransit acknowledges the message when Consume returns without throwing"],
+        ["StopAsync closing _channel / _connection", "Automatic: the MassTransit hosted service closes the shared bus connection on shutdown"],
+    ],
+    widths=[8.6*cm, 8.2*cm]
+)
+callout("What happens if Consume throws?",
+        "Today, an exception in the RabbitMQ.Client consumer's handler is unhandled and the message is never acknowledged "
+        "(it can be stuck as \u201cunacked\u201d or redelivered forever depending on connection behavior). With MassTransit, an "
+        "exception is caught by the receive pipeline and, by default, the message is retried according to the configured "
+        "retry policy, then moved to an <font face='Courier'>employee.events.Queue_error</font> queue if all retries are exhausted "
+        "&mdash; so no message is silently lost, and the main queue keeps flowing.",
+        "note")
+
+# =================================================================
+# 10. STEP 5 - PROGRAM.CS
+# =================================================================
+story.append(PageBreak())
+step_header(5, "Register MassTransit in Program.cs")
+file_tag("EmployeeApp.Api\\Program.cs", "modify")
+p("Remove the three RabbitMQ-specific registrations and replace them with a single "
+  "<font face='Courier'>AddMassTransit</font> block.")
+h3("Remove these lines")
+code(
+"""builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection(\"RabbitMq\"));
+...
+builder.Services.AddSingleton<RabbitMqPublisher>();
+builder.Services.AddHostedService<EmployeeEventConsumer>();"""
+)
+h3("Add this in their place")
+code(
+"""using EmployeeApp.Api.Messaging;
+using MassTransit;
+
+var rabbitMqConfig = builder.Configuration.GetSection(\"RabbitMq\");
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<EmployeeEventConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(rabbitMqConfig[\"HostName\"], rabbitMqConfig[\"VirtualHost\"], h =>
+        {
+            h.Username(rabbitMqConfig[\"UserName\"]!);
+            h.Password(rabbitMqConfig[\"Password\"]!);
+        });
+
+        cfg.ReceiveEndpoint(rabbitMqConfig[\"EmployeeQueue\"]!, e =>
+        {
+            e.ConfigureConsumer<EmployeeEventConsumer>(context);
+        });
+    });
+});"""
+)
+p("Full relevant section of <font face='Courier'>Program.cs</font> after the change (surrounding services unchanged):")
+code(
+"""using EmployeeApp.Api.Data;
+using EmployeeApp.Api.Mappings;
+using EmployeeApp.Api.Messaging;
+using EmployeeApp.Api.Middlewares;
+using EmployeeApp.Api.Options;
+using EmployeeApp.Api.Repositories;
+using EmployeeApp.Api.Services;
+using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ... AddControllers, AddOpenApi, AddDbContext, AddIdentity, AddAuthentication (unchanged) ...
+
+var rabbitMqConfig = builder.Configuration.GetSection(\"RabbitMq\");
+
+builder.Services.AddCors(cfg => { /* unchanged */ });
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<EmployeeEventConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(rabbitMqConfig[\"HostName\"], rabbitMqConfig[\"VirtualHost\"], h =>
+        {
+            h.Username(rabbitMqConfig[\"UserName\"]!);
+            h.Password(rabbitMqConfig[\"Password\"]!);
+        });
+
+        cfg.ReceiveEndpoint(rabbitMqConfig[\"EmployeeQueue\"]!, e =>
+        {
+            e.ConfigureConsumer<EmployeeEventConsumer>(context);
+        });
+    });
+});
+
+builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection(\"Garnet\"));
+builder.Services.AddStackExchangeRedisCache(options => { /* unchanged */ });
+builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); });
+
+var app = builder.Build();
+// ... unchanged pipeline (UseExceptionHandler, role seeding, UseCors, MapControllers, etc.) ..."""
+)
+callout("Why the 2-argument Host(...) overload?",
+        "<font face='Courier'>cfg.Host(host, virtualHost, configure)</font> connects on the default AMQP port 5672, which "
+        "matches the <font face='Courier'>\"Port\": 5672</font> value already in appsettings.json. If you ever point this at a "
+        "broker on a non-default port, use the 3-argument overload instead: "
+        "<font face='Courier'>cfg.Host(host, port, virtualHost, configure)</font>.",
+        "note")
+callout("AddMassTransit also registers the hosted service for you",
+        "You do not need an equivalent of <font face='Courier'>AddHostedService&lt;EmployeeEventConsumer&gt;()</font> anymore. "
+        "Calling <font face='Courier'>AddMassTransit</font> automatically registers MassTransit's own bus hosted service, which "
+        "starts the shared connection when the app starts and stops it gracefully on shutdown.",
+        "note")
+
+# =================================================================
+# 11. STEP 6 - APPSETTINGS
+# =================================================================
+story.append(PageBreak())
+step_header(6, "Update appsettings.json")
+file_tag("EmployeeApp.Api\\appsettings.json", "modify")
+p("No new configuration section is required &mdash; the existing <font face='Courier'>RabbitMq</font> section already has "
+  "everything the new Program.cs code reads (<font face='Courier'>HostName</font>, <font face='Courier'>UserName</font>, "
+  "<font face='Courier'>Password</font>, <font face='Courier'>VirtualHost</font>, <font face='Courier'>EmployeeQueue</font>). "
+  "One key becomes unused:")
+compare_table([
+    ('<font face="Courier">"RabbitMq": {<br/>'
+     '&nbsp;&nbsp;"HostName": "localhost",<br/>'
+     '&nbsp;&nbsp;"Port": 5672,<br/>'
+     '&nbsp;&nbsp;"UserName": "guest",<br/>'
+     '&nbsp;&nbsp;"Password": "guest",<br/>'
+     '&nbsp;&nbsp;"VirtualHost": "/",<br/>'
+     '&nbsp;&nbsp;"Exchange": "employee.events",<br/>'
+     '&nbsp;&nbsp;"EmployeeQueue": "employee.events.Queue"<br/>'
+     '}</font>',
+     '<font face="Courier">"RabbitMq": {<br/>'
+     '&nbsp;&nbsp;"HostName": "localhost",<br/>'
+     '&nbsp;&nbsp;"Port": 5672,<br/>'
+     '&nbsp;&nbsp;"UserName": "guest",<br/>'
+     '&nbsp;&nbsp;"Password": "guest",<br/>'
+     '&nbsp;&nbsp;"VirtualHost": "/",<br/>'
+     '&nbsp;&nbsp;"EmployeeQueue": "employee.events.Queue"<br/>'
+     '}</font>'),
+], col_headers=("Before", "After (Exchange key removed)"))
+callout("Why is \u201cExchange\u201d no longer needed?",
+        "The old code never actually used the \u201cExchange\u201d value either &mdash; both the old publisher and consumer "
+        "published/declared against the default exchange (empty string) using the queue name as the routing key. With MassTransit, "
+        "the exchange used for <font face='Courier'>EmployeeEvent</font> is auto-generated from the message's type name "
+        "(<font face='Courier'>EmployeeApp.Api.Events:EmployeeEvent</font>), and the "
+        "<font face='Courier'>ReceiveEndpoint(\"employee.events.Queue\", ...)</font> call automatically creates and binds the "
+        "queue to that exchange. You may remove the key, or leave it in place harmlessly &mdash; it will simply be ignored.",
+        "note")
+p("Repeat the same review for <font face='Courier'>appsettings.Development.json</font> if it also defines a "
+  "<font face='Courier'>RabbitMq</font> section with an <font face='Courier'>Exchange</font> key.")
+
+# =================================================================
+# 12. STEP 7 - REMOVE OBSOLETE FILES
+# =================================================================
+story.append(PageBreak())
+step_header(7, "Remove Obsolete Files")
+p("After Steps 1-6 are complete, the following clean-up removes code that is no longer referenced anywhere:")
+simple_table(
+    ["File", "Action", "Reason"],
+    [
+        ["Messaging/RabbitMqPublisher.cs", "Delete", "Fully replaced by the built-in IPublishEndpoint (Step 3)"],
+        ["Options/RabbitMqOptions.cs", "Delete", "Was bound via Configure&lt;RabbitMqOptions&gt; but never injected/consumed anywhere; the new Program.cs code reads IConfiguration directly"],
+        ["Program.cs line: Configure&lt;RabbitMqOptions&gt;(...)", "Delete", "Its target class no longer exists"],
+    ],
+    widths=[6.4*cm, 2.6*cm, 7.4*cm]
+)
+callout("Double-check before deleting RabbitMqOptions.cs",
+        "Search the solution for any other reference to <font face='Courier'>RabbitMqOptions</font> before deleting it "
+        "(right-click the class name &rarr; Find All References in Visual Studio). In the current codebase it is only "
+        "registered in Program.cs and never injected elsewhere, so it is safe to remove &mdash; but always confirm in your own copy.",
+        "warn")
+
+# =================================================================
+# 13. STEP 8 - BUILD, RUN, VERIFY
+# =================================================================
+story.append(PageBreak())
+step_header(8, "Build, Run and Verify")
+h3("8.1 Restore and build")
+code(
+"""dotnet restore EmployeeApp.Api\\EmployeeApp.Api.csproj
+dotnet build EmployeeApp.Api\\EmployeeApp.Api.csproj"""
+)
+p("Or in Visual Studio: right-click the solution &rarr; <b>Rebuild Solution</b>, and confirm zero errors.")
+h3("8.2 Start RabbitMQ (if not already running)")
+code("docker run -d --hostname employeeapp-rabbit --name employeeapp-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:3-management")
+p("Skip this step if RabbitMQ is already running as a Windows service or in an existing container.")
+h3("8.3 Run the API and watch the logs")
+p("On startup you should see MassTransit's own bus startup log lines (bus endpoint configuration, and the "
+  "<font face='Courier'>employee.events.Queue</font> receive endpoint being started) in place of the old "
+  "\u201cEmployeeConsumer Started. Listening at Queue+++++++++++++\u201d message.")
+h3("8.4 Trigger an event")
+p("Call <font face='Courier'>POST /api/employee</font> (create) or <font face='Courier'>DELETE /api/employee/{id}</font> through "
+  "Swagger/the Blazor client. Confirm the log line from "
+  "<font face='Courier'>EmployeeEventConsumer.Consume</font> appears: "
+  "\u201cEmployee Event Created 12, Jane Doe, ...\u201d")
+h3("8.5 Inspect the broker topology")
+p("Open the RabbitMQ Management UI at <font face='Courier'>http://localhost:15672</font> (guest/guest) and confirm:")
+bullets([
+    "An exchange named <font face='Courier'>EmployeeApp.Api.Events:EmployeeEvent</font> now exists (type: fanout/topic).",
+    "A queue named <font face='Courier'>employee.events.Queue</font> exists and is bound to that exchange.",
+    "A second queue named <font face='Courier'>employee.events.Queue_skipped</font> or <font face='Courier'>_error</font> may "
+    "appear the first time a message fails processing &mdash; that is expected MassTransit fault-handling behavior, not a bug.",
+])
+h3("8.6 Regression check")
+p("Confirm unrelated functionality still works: employee list retrieval (with Garnet/Redis caching), authentication/JWT, and CRUD "
+  "operations through the Blazor client &mdash; none of those paths were touched by this migration.")
+
+# =================================================================
+# 14. OPTIONAL ENHANCEMENTS
+# =================================================================
+story.append(PageBreak())
+h1("14. Optional Enhancements (Retry, Outbox, Strongly-Typed Events)")
+p("These are <b>not required</b> to complete the migration, but are natural next steps once the core conversion in Steps 1-8 "
+  "is working and verified.")
+
+h2("14.1 Add an explicit retry policy")
+p("By default MassTransit retries transient consumer failures a small number of times immediately. For a more resilient, "
+  "explicit policy with backoff, add <font face='Courier'>UseMessageRetry</font> inside the RabbitMQ configuration:")
+code(
+"""x.UsingRabbitMq((context, cfg) =>
+{
+    cfg.Host(rabbitMqConfig[\"HostName\"], rabbitMqConfig[\"VirtualHost\"], h =>
+    {
+        h.Username(rabbitMqConfig[\"UserName\"]!);
+        h.Password(rabbitMqConfig[\"Password\"]!);
+    });
+
+    cfg.UseMessageRetry(r => r.Intervals(
+        TimeSpan.FromSeconds(1),
+        TimeSpan.FromSeconds(5),
+        TimeSpan.FromSeconds(15)));
+
+    cfg.ReceiveEndpoint(rabbitMqConfig[\"EmployeeQueue\"]!, e =>
+    {
+        e.ConfigureConsumer<EmployeeEventConsumer>(context);
+    });
+});"""
+)
+p("This retries a failed <font face='Courier'>Consume</font> call after 1s, then 5s, then 15s before the message is finally "
+  "moved to the error queue.")
+
+h2("14.2 Split EmployeeEvent into strongly-typed messages")
+p("The minimal-change path (Step 2) kept a single <font face='Courier'>EmployeeEvent</font> class with an "
+  "<font face='Courier'>EventType</font> string. A more idiomatic MassTransit design uses one message type per business event, "
+  "so the consumer can implement multiple <font face='Courier'>IConsumer&lt;T&gt;</font> interfaces instead of branching on a string:")
+code(
+"""namespace EmployeeApp.Api.Events
+{
+    public record EmployeeCreated(int EmployeeId, string EmployeeName, DateTime OccurredAt);
+    public record EmployeeDeleted(int EmployeeId, string EmployeeName, DateTime OccurredAt);
+}
+
+public class EmployeeEventConsumer :
+    IConsumer<EmployeeCreated>,
+    IConsumer<EmployeeDeleted>
+{
+    public Task Consume(ConsumeContext<EmployeeCreated> context)
+    {
+        _logger.LogInformation(\"Employee created: {Id} {Name}\", context.Message.EmployeeId, context.Message.EmployeeName);
+        return Task.CompletedTask;
+    }
+
+    public Task Consume(ConsumeContext<EmployeeDeleted> context)
+    {
+        _logger.LogInformation(\"Employee deleted: {Id} {Name}\", context.Message.EmployeeId, context.Message.EmployeeName);
+        return Task.CompletedTask;
+    }
+}"""
+)
+p("<font face='Courier'>EmployeeService</font> would then call "
+  "<font face='Courier'>publishEndpoint.Publish(new EmployeeCreated(result.Id, result.Name, DateTime.UtcNow))</font> "
+  "instead of constructing a generic <font face='Courier'>EmployeeEvent</font> with a string tag. "
+  "This is a separate, optional refactor &mdash; apply it only after the core migration is stable.")
+
+h2("14.3 Unit-test the consumer with the in-memory test harness")
+p("MassTransit ships an in-memory test transport so consumers can be tested without a running RabbitMQ broker:")
+code(
+"""// Test project: dotnet add package MassTransit.TestFramework --version 8.5.10
+
+await using var provider = new ServiceCollection()
+    .AddMassTransitTestHarness(x =>
+    {
+        x.AddConsumer<EmployeeEventConsumer>();
+    })
+    .BuildServiceProvider(true);
+
+var harness = provider.GetRequiredService<ITestHarness>();
+await harness.Start();
+
+await harness.Bus.Publish(new EmployeeEvent
+{
+    EventType = \"Created\", EmployeeId = 1, EmployeeName = \"Test\", OccurredAt = DateTime.UtcNow
+});
+
+Assert.That(await harness.Consumed.Any<EmployeeEvent>());"""
+)
+
+# =================================================================
+# 15. FILE-BY-FILE SUMMARY
+# =================================================================
+story.append(PageBreak())
+h1("15. Full File-by-File Change Summary")
+simple_table(
+    ["File", "Change"],
+    [
+        ["EmployeeApp.Api.csproj", "Remove RabbitMQ.Client 7.2.1; add MassTransit 8.5.10 and MassTransit.RabbitMQ 8.5.10"],
+        ["Messaging/RabbitMqPublisher.cs", "Delete entire file"],
+        ["Messaging/EmployeeEventConsumer.cs", "Replace BackgroundService implementation with IConsumer<EmployeeEvent>"],
+        ["Options/RabbitMqOptions.cs", "Delete entire file (unused after migration)"],
+        ["Events/EmployeeEvent.cs", "No change (minimal-change path); optionally split per Section 14.2"],
+        ["Services/EmployeeService.cs", "Constructor: RabbitMqPublisher -> IPublishEndpoint. Calls: PublishAsync(...) -> Publish(...)"],
+        ["Program.cs", "Remove Configure<RabbitMqOptions>, AddSingleton<RabbitMqPublisher>, AddHostedService<EmployeeEventConsumer>. Add AddMassTransit(...) block"],
+        ["appsettings.json", "Optional: remove the now-unused \u201cExchange\u201d key from the RabbitMq section"],
+    ],
+    widths=[5.8*cm, 10.2*cm]
+)
+
+# =================================================================
+# 16. ROLLBACK PLAN
+# =================================================================
+h1("16. Rollback Plan")
+p("Because this migration is isolated to the messaging layer, rolling back is straightforward if needed:")
+numbered([
+    "Revert EmployeeApp.Api.csproj, Program.cs, EmployeeService.cs, and EmployeeEventConsumer.cs via source control (git checkout / git revert on the migration commit).",
+    "Restore Messaging/RabbitMqPublisher.cs and Options/RabbitMqOptions.cs from git history.",
+    "Restore the \u201cExchange\u201d key in appsettings.json if it was removed.",
+    "Run dotnet restore to pull RabbitMQ.Client back in and drop the MassTransit packages.",
+])
+callout("Recommended practice",
+        "Perform this migration on a dedicated branch (e.g. <font face='Courier'>feature/masstransit-migration</font>) and commit "
+        "after each step (packages, publisher, consumer, Program.cs, cleanup) so any single step can be reverted independently "
+        "without undoing the whole migration.",
+        "note")
+
+# =================================================================
+# 17. KEY TAKEAWAYS
+# =================================================================
+h1("17. Key Takeaways")
+bullets([
+    "Use <b>MassTransit 8.5.10</b> (the last free, Apache-2.0 release) and <b>MassTransit.RabbitMQ 8.5.10</b> &mdash; version 9.x requires a commercial license.",
+    "The whole migration touches exactly <b>5 files</b>: the .csproj, RabbitMqPublisher.cs (deleted), EmployeeEventConsumer.cs (rewritten), EmployeeService.cs (constructor + 2 call sites), and Program.cs (DI registration).",
+    "No change is required to controllers, the Blazor client, EF Core, Identity/JWT, AutoMapper, or the Garnet/Redis cache.",
+    "The existing appsettings.json RabbitMq section is reused as-is (the \u201cExchange\u201d key becomes optional/unused).",
+    "You gain shared connection management, automatic retries, an error queue, and strongly-typed consumers with less code than exists today.",
+])
+spacer(20)
+hr()
+caption("Generated for EmployeeApp.Api (.NET 10) &mdash; based on the actual RabbitMqPublisher.cs, EmployeeEventConsumer.cs, "
+        "EmployeeService.cs, Program.cs and EmployeeApp.Api.csproj files present in the workspace at the time of writing.")
+
+# =================================================================
+# BUILD
+# =================================================================
+def on_page(canvas, doc):
+    canvas.saveState()
+    canvas.setStrokeColor(BORDER)
+    canvas.setLineWidth(0.5)
+    canvas.line(1.8*cm, 27.6*cm, 19.2*cm, 27.6*cm)
+    canvas.setFont("Helvetica", 8)
+    canvas.setFillColor(colors.HexColor("#888888"))
+    canvas.drawString(1.8*cm, 27.75*cm, "EmployeeApp \u2014 RabbitMQ to MassTransit Migration Guide")
+    canvas.line(1.8*cm, 1.55*cm, 19.2*cm, 1.55*cm)
+    canvas.drawString(1.8*cm, 1.15*cm, "EmployeeApp.Api (.NET 10)")
+    canvas.drawRightString(19.2*cm, 1.15*cm, f"Page {doc.page}")
+    canvas.restoreState()
+
+doc = SimpleDocTemplate(
+    OUTPUT, pagesize=A4,
+    leftMargin=1.8*cm, rightMargin=1.8*cm, topMargin=2.0*cm, bottomMargin=2.0*cm,
+    title="EmployeeApp - RabbitMQ to MassTransit Migration Guide",
+    author="GitHub Copilot"
+)
+doc.build(story, onFirstPage=on_page, onLaterPages=on_page)
+print(f"PDF generated: {OUTPUT}")

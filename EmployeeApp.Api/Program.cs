@@ -2,6 +2,7 @@ using EmployeeApp.Api.Data;
 using EmployeeApp.Api.Mappings;
 using EmployeeApp.Api.Messaging;
 using EmployeeApp.Api.Middlewares;
+using EmployeeApp.Api.Options;
 using EmployeeApp.Api.Repositories;
 using EmployeeApp.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -73,6 +74,16 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddSingleton<RabbitMqPublisher>();
+builder.Services.AddHostedService<EmployeeEventConsumer>();
+builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ??
+    new GarnetOptions();
+    options.Configuration = garnetOptions.ConnectionString;
+    options.InstanceName = garnetOptions.InstanceName;
+
+});
 
 builder.Services.AddAutoMapper(cfg =>
 {

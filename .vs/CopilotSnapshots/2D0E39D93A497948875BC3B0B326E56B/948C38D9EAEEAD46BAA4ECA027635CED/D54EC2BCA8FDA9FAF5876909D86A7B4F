@@ -1,0 +1,74 @@
+﻿$ErrorActionPreference = "Stop"
+$outputPath = Join-Path $PSScriptRoot "WordAutomationTest.docx"
+if (Test-Path $outputPath) { Remove-Item $outputPath -Force }
+
+$word = $null
+$doc = $null
+try {
+	$word = New-Object -ComObject Word.Application
+	$word.Visible = $false
+	$doc = $word.Documents.Add()
+	$sel = $word.Selection
+
+	$sel.Style = "Title"
+	$sel.TypeText("Automation Test")
+	$sel.TypeParagraph()
+
+	$sel.Style = "Heading 1"
+	$sel.TypeText("Heading One")
+	$sel.TypeParagraph()
+
+	$sel.Style = "Heading 2"
+	$sel.TypeText("Heading Two")
+	$sel.TypeParagraph()
+
+	$sel.Style = "Normal"
+	$sel.Font.Name = "Calibri"
+	$sel.Font.Size = 11
+	$sel.TypeText("Normal body paragraph.")
+	$sel.TypeParagraph()
+
+	$sel.Style = "List Bullet"
+	$sel.TypeText("Bullet one")
+	$sel.TypeParagraph()
+
+	$sel.Style = "Intense Quote"
+	$sel.TypeText("Note: this is a note style test.")
+	$sel.TypeParagraph()
+
+	$sel.Style = "Normal"
+	$grayColor = 242 + (242 * 256) + (242 * 65536)
+	$sel.ParagraphFormat.LeftIndent = $word.InchesToPoints(0.3)
+	$sel.ParagraphFormat.LineSpacingRule = 0
+	$sel.ParagraphFormat.SpaceAfter = 0
+	$sel.Shading.BackgroundPatternColor = $grayColor
+	$sel.Font.Name = "Consolas"
+	$sel.Font.Size = 9.5
+	$sel.TypeText('public class Sample')
+	$sel.TypeParagraph()
+	$sel.TypeText('{')
+	$sel.TypeParagraph()
+	$sel.TypeText('}')
+	$sel.TypeParagraph()
+	$sel.Shading.BackgroundPatternColor = -1
+	$sel.ParagraphFormat.LeftIndent = 0
+	$sel.ParagraphFormat.SpaceAfter = 8
+	$sel.Font.Name = "Calibri"
+	$sel.Font.Size = 11
+
+	$sel.InsertBreak(7)
+	$sel.Style = "Heading 1"
+	$sel.TypeText("Page Two Heading")
+	$sel.TypeParagraph()
+
+	$doc.SaveAs2($outputPath, 12)
+	Write-Output "SUCCESS: $outputPath"
+}
+finally {
+	if ($doc -ne $null) { $doc.Close([ref]$false) | Out-Null }
+	if ($word -ne $null) { $word.Quit() | Out-Null }
+	if ($doc -ne $null) { [System.Runtime.InteropServices.Marshal]::ReleaseComObject($doc) | Out-Null }
+	if ($word -ne $null) { [System.Runtime.InteropServices.Marshal]::ReleaseComObject($word) | Out-Null }
+	[GC]::Collect()
+	[GC]::WaitForPendingFinalizers()
+}

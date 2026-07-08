@@ -2162,23 +2162,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\reni_\\.nuget\\packages\\": {},
-    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\311046\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\reni\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
+      "projectUniqueName": "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
       "projectName": "EmployeeClient",
-      "projectPath": "E:\\reni\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
-      "packagesPath": "C:\\Users\\reni_\\.nuget\\packages\\",
-      "outputPath": "E:\\reni\\EmployeeApp\\EmployeeClient\\obj\\",
+      "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
+      "packagesPath": "C:\\Users\\311046\\.nuget\\packages\\",
+      "outputPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\reni_\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\311046\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2194,8 +2194,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\reni\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
-              "projectPath": "E:\\reni\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj"
+            "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
+              "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj"
             }
           }
         }
