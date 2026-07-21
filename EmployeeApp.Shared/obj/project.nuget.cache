@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "uanlQ1b/Olg=",
+  "dgSpecHash": "vtfjPCb+ifc=",
   "success": true,
-  "projectFilePath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\reni_\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\10.0.10\\microsoft.netcore.app.runtime.linux-x64.10.0.10.nupkg.sha512",
+    "C:\\Users\\reni_\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\10.0.10\\microsoft.aspnetcore.app.runtime.linux-x64.10.0.10.nupkg.sha512"
+  ],
   "logs": []
 }

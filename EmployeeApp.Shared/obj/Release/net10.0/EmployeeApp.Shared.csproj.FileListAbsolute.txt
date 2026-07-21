@@ -1,0 +1,12 @@
+E:\Test\EmployeeApp\EmployeeApp.Shared\bin\Release\net10.0\EmployeeApp.Shared.deps.json
+E:\Test\EmployeeApp\EmployeeApp.Shared\bin\Release\net10.0\EmployeeApp.Shared.dll
+E:\Test\EmployeeApp\EmployeeApp.Shared\bin\Release\net10.0\EmployeeApp.Shared.pdb
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.GeneratedMSBuildEditorConfig.editorconfig
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.AssemblyInfoInputs.cache
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.AssemblyInfo.cs
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.csproj.CoreCompileInputs.cache
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.sourcelink.json
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.dll
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\refint\EmployeeApp.Shared.dll
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\EmployeeApp.Shared.pdb
+E:\Test\EmployeeApp\EmployeeApp.Shared\obj\Release\net10.0\ref\EmployeeApp.Shared.dll

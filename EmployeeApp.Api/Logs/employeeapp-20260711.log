@@ -1,0 +1,67 @@
+2026-07-11 11:36:12.338 +05:30 [INF] Configured endpoint employee.events.Queue, Consumer: EmployeeApp.Api.Messaging.EmployeeEventConsumer
+2026-07-11 11:36:13.224 +05:30 [INF] Now listening on: https://localhost:7021
+2026-07-11 11:36:13.227 +05:30 [INF] Now listening on: http://localhost:5070
+2026-07-11 11:36:13.288 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-11 11:36:13.289 +05:30 [INF] Hosting environment: Development
+2026-07-11 11:36:13.289 +05:30 [INF] Content root path: E:\Demo\EmployeeApp\EmployeeApp.Api
+2026-07-11 11:36:13.465 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-11 11:37:22.626 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 6.3009 ms
+2026-07-11 11:37:25.031 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 2380.5100 ms
+2026-07-11 11:37:29.947 +05:30 [INF] HTTP OPTIONS /api/employees responded 204 in 1.7033 ms
+2026-07-11 11:37:30.775 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-11 11:37:31.251 +05:30 [INF] HTTP GET /api/employees responded 200 in 1296.4526 ms
+2026-07-11 11:38:04.582 +05:30 [INF] HTTP OPTIONS /api/employees responded 204 in 0.3270 ms
+2026-07-11 11:38:04.644 +05:30 [INF] HTTP GET /api/employees responded 200 in 51.5056 ms
+2026-07-11 11:41:13.548 +05:30 [INF] Usage Telemetry: {"id":"c0830000-57df-a570-9a49-08dedf12825f","created":"2026-07-11T11:36:12.2899127\u002B05:30","host":{"framework_version":"10.0.9","mass_transit_version":"8.5.10.0","operating_system_version":"Microsoft Windows NT 10.0.26200.0","time_zone_info":"(UTC\u002B05:30) Chennai, Kolkata, Mumbai, New Delhi","commit_hash":"62ab339afa3bac2e9b3fe1769d0d35d7e44778e9"},"bus":[{"created":"2026-07-11T11:36:12.2922880\u002B05:30","configured":"2026-07-11T11:36:12.9165956\u002B05:30","started":"2026-07-11T11:36:13.4625333\u002B05:30","name":"IBus","endpoints":[{"name":"employee.events.Queue","type":"RabbitMQ","prefetch_count":32,"consumer_count":1,"message_count":1},{"name":"_bus_","type":"RabbitMQ","prefetch_count":32}]}]}
+2026-07-11 11:45:08.533 +05:30 [INF] Configured endpoint employee.events.Queue, Consumer: EmployeeApp.Api.Messaging.EmployeeEventConsumer
+2026-07-11 11:45:09.098 +05:30 [INF] Now listening on: https://localhost:7021
+2026-07-11 11:45:09.102 +05:30 [INF] Now listening on: http://localhost:5070
+2026-07-11 11:45:09.210 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-11 11:45:09.210 +05:30 [INF] Hosting environment: Development
+2026-07-11 11:45:09.210 +05:30 [INF] Content root path: E:\Demo\EmployeeApp\EmployeeApp.Api
+2026-07-11 11:45:09.270 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-11 11:45:09.756 +05:30 [INF] HTTP OPTIONS /api/employees responded 204 in 6.9553 ms
+2026-07-11 11:45:10.075 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-11 11:45:10.758 +05:30 [INF] HTTP GET /api/employees responded 200 in 979.6038 ms
+2026-07-11 11:45:29.714 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 465.6278 ms
+2026-07-11 11:46:37.853 +05:30 [INF] HTTP GET /api/employees responded 401 in 15.1494 ms
+2026-07-11 11:46:48.842 +05:30 [INF] HTTP GET /api/employees responded 200 in 31.2006 ms
+2026-07-11 11:47:23.453 +05:30 [INF] HTTP GET /api/employees responded 200 in 34.7336 ms
+2026-07-11 11:47:32.508 +05:30 [INF] HTTP POST /api/employees responded 201 in 745.9978 ms
+2026-07-11 11:47:32.524 +05:30 [INF] Employee Event : Created, 1005, Asha, "2026-07-11T06:17:32.1860994Z"===========
+2026-07-11 11:50:09.328 +05:30 [INF] Usage Telemetry: {"id":"9c7e0000-57df-a570-9607-08dedf13c1f3","created":"2026-07-11T11:45:08.4530607\u002B05:30","host":{"framework_version":"10.0.9","mass_transit_version":"8.5.10.0","operating_system_version":"Microsoft Windows NT 10.0.26200.0","time_zone_info":"(UTC\u002B05:30) Chennai, Kolkata, Mumbai, New Delhi","commit_hash":"62ab339afa3bac2e9b3fe1769d0d35d7e44778e9"},"bus":[{"created":"2026-07-11T11:45:08.4572847\u002B05:30","configured":"2026-07-11T11:45:08.7941005\u002B05:30","started":"2026-07-11T11:45:09.2679317\u002B05:30","name":"IBus","endpoints":[{"name":"employee.events.Queue","type":"RabbitMQ","prefetch_count":32,"consumer_count":1,"message_count":1},{"name":"_bus_","type":"RabbitMQ","prefetch_count":32}]}]}
+2026-07-11 11:56:38.584 +05:30 [INF] Configured endpoint employee.events.Queue, Consumer: EmployeeApp.Api.Messaging.EmployeeEventConsumer
+2026-07-11 11:56:38.740 +05:30 [INF] Now listening on: https://localhost:7021
+2026-07-11 11:56:38.740 +05:30 [INF] Now listening on: http://localhost:5070
+2026-07-11 11:56:38.759 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-11 11:56:38.759 +05:30 [INF] Hosting environment: Development
+2026-07-11 11:56:38.759 +05:30 [INF] Content root path: E:\Demo\EmployeeApp\EmployeeApp.Api
+2026-07-11 11:56:38.820 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-11 11:56:54.756 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-11 11:56:54.795 +05:30 [INF] HTTP POST /api/employees responded 400 in 136.1351 ms
+2026-07-11 11:57:03.627 +05:30 [INF] HTTP POST /api/employees responded 201 in 275.5106 ms
+2026-07-11 11:57:03.629 +05:30 [INF] Employee Event : Created, 1006, Jaya, "2026-07-11T06:27:03.5290316Z"===========
+2026-07-11 11:58:30.924 +05:30 [INF] Configured endpoint employee.events.Queue, Consumer: EmployeeApp.Api.Messaging.EmployeeEventConsumer
+2026-07-11 11:58:31.079 +05:30 [INF] Now listening on: https://localhost:7021
+2026-07-11 11:58:31.081 +05:30 [INF] Now listening on: http://localhost:5070
+2026-07-11 11:58:31.103 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-11 11:58:31.104 +05:30 [INF] Hosting environment: Development
+2026-07-11 11:58:31.105 +05:30 [INF] Content root path: E:\Demo\EmployeeApp\EmployeeApp.Api
+2026-07-11 11:58:31.166 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-11 11:59:05.623 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-11 11:59:06.048 +05:30 [INF] Employee Event : Created, 1007, Susan, "2026-07-11T06:29:05.9257261Z"===========
+2026-07-11 11:59:06.055 +05:30 [INF] HTTP POST /api/employees responded 201 in 568.0641 ms
+2026-07-11 12:03:31.196 +05:30 [INF] Usage Telemetry: {"id":"fc790000-57df-a570-4533-08dedf15a040","created":"2026-07-11T11:58:30.9063358\u002B05:30","host":{"framework_version":"10.0.9","mass_transit_version":"8.5.10.0","operating_system_version":"Microsoft Windows NT 10.0.26200.0","time_zone_info":"(UTC\u002B05:30) Chennai, Kolkata, Mumbai, New Delhi","commit_hash":"62ab339afa3bac2e9b3fe1769d0d35d7e44778e9"},"bus":[{"created":"2026-07-11T11:58:30.9073056\u002B05:30","configured":"2026-07-11T11:58:30.9986772\u002B05:30","started":"2026-07-11T11:58:31.1656194\u002B05:30","name":"IBus","endpoints":[{"name":"employee.events.Queue","type":"RabbitMQ","prefetch_count":32,"consumer_count":1,"message_count":1},{"name":"_bus_","type":"RabbitMQ","prefetch_count":32}]}]}
+2026-07-11 12:24:24.412 +05:30 [INF] HTTP GET /api/employees responded 401 in 10.4466 ms
+2026-07-11 12:25:10.976 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 311.2553 ms
+2026-07-11 12:25:31.216 +05:30 [INF] HTTP GET /api/employees responded 200 in 150.8146 ms
+2026-07-11 12:25:39.946 +05:30 [INF] HTTP POST /api/employees responded 201 in 22.8115 ms
+2026-07-11 12:25:39.947 +05:30 [INF] Employee Event : Created, 1008, Susan, "2026-07-11T06:55:39.9407496Z"===========
+2026-07-11 12:35:10.017 +05:30 [INF] HTTP GET /api/employees responded 200 in 151.5473 ms
+2026-07-11 12:35:11.044 +05:30 [INF] HTTP GET /api/employees responded 200 in 3.6012 ms
+2026-07-11 12:35:11.802 +05:30 [INF] HTTP GET /api/employees responded 200 in 1.4826 ms
+2026-07-11 12:35:12.458 +05:30 [INF] HTTP GET /api/employees responded 200 in 1.9329 ms
+2026-07-11 12:35:13.086 +05:30 [INF] HTTP GET /api/employees responded 200 in 2.1202 ms
+2026-07-11 12:35:38.730 +05:30 [INF] HTTP POST /api/employees responded 201 in 13.5307 ms
+2026-07-11 12:35:38.730 +05:30 [INF] Employee Event : Created, 1009, Susan, "2026-07-11T07:05:38.7242551Z"===========
+2026-07-11 12:44:24.709 +05:30 [INF] HTTP POST /api/employees responded 401 in 1.1081 ms

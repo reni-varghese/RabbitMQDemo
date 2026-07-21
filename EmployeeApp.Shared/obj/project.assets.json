@@ -1,30 +1,31 @@
 {
   "version": 4,
   "targets": {
-    "net10.0": {}
+    "net10.0": {},
+    "net10.0/linux-x64": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\311046\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\reni_\\.nuget\\packages\\": {},
+    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
+      "projectUniqueName": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
       "projectName": "EmployeeApp.Shared",
-      "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
-      "packagesPath": "C:\\Users\\311046\\.nuget\\packages\\",
-      "outputPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\obj\\",
+      "projectPath": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
+      "packagesPath": "C:\\Users\\reni_\\.nuget\\packages\\",
+      "outputPath": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\311046\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\reni_\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -69,12 +70,22 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
+            "version": "[10.0.10, 10.0.10]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.linux-x64",
+            "version": "[10.0.10, 10.0.10]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -349,6 +360,11 @@
           "System.Xml.XPath": "(,4.3.32767]",
           "System.Xml.XPath.XDocument": "(,5.0.32767]"
         }
+      }
+    },
+    "runtimes": {
+      "linux-x64": {
+        "#import": []
       }
     }
   }

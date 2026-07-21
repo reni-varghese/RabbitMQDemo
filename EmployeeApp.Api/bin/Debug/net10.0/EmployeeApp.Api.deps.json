@@ -9,15 +9,20 @@
       "EmployeeApp.Api/1.0.0": {
         "dependencies": {
           "AutoMapper": "16.1.1",
+          "Elastic.Serilog.Sinks": "9.0.0",
           "EmployeeApp.Shared": "1.0.0",
+          "MassTransit": "8.5.10",
+          "MassTransit.RabbitMQ": "8.5.10",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.9",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.9",
           "Microsoft.AspNetCore.OpenApi": "10.0.8",
           "Microsoft.EntityFrameworkCore.SqlServer": "10.0.9",
           "Microsoft.EntityFrameworkCore.Tools": "10.0.9",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "10.0.9",
-          "RabbitMQ.Client": "7.2.1",
+          "Microsoft.OpenApi": "2.7.5",
           "Serilog.AspNetCore": "10.0.0",
+          "Serilog.Enrichers.Environment": "3.0.1",
+          "Serilog.Settings.Configuration": "10.0.1",
           "Serilog.Sinks.Console": "6.1.1",
           "Serilog.Sinks.File": "7.0.0",
           "System.IdentityModel.Tokens.Jwt": "8.19.1"
@@ -63,11 +68,125 @@
           }
         }
       },
+      "Elastic.Channels/0.14.0": {
+        "runtime": {
+          "lib/netstandard2.1/Elastic.Channels.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.14.0.0"
+          }
+        }
+      },
+      "Elastic.CommonSchema/9.0.0": {
+        "runtime": {
+          "lib/net9.0/Elastic.CommonSchema.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "Elastic.CommonSchema.Serilog/9.0.0": {
+        "dependencies": {
+          "Elastic.CommonSchema": "9.0.0",
+          "Serilog": "4.3.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.CommonSchema.Serilog.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "Elastic.Ingest.Elasticsearch/0.14.0": {
+        "dependencies": {
+          "Elastic.Ingest.Transport": "0.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Ingest.Elasticsearch.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.14.0.0"
+          }
+        }
+      },
+      "Elastic.Ingest.Elasticsearch.CommonSchema/9.0.0": {
+        "dependencies": {
+          "Elastic.CommonSchema": "9.0.0",
+          "Elastic.Ingest.Elasticsearch": "0.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Ingest.Elasticsearch.CommonSchema.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "Elastic.Ingest.Transport/0.14.0": {
+        "dependencies": {
+          "Elastic.Channels": "0.14.0",
+          "Elastic.Transport": "0.10.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Ingest.Transport.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.14.0.0"
+          }
+        }
+      },
+      "Elastic.Serilog.Sinks/9.0.0": {
+        "dependencies": {
+          "Elastic.CommonSchema.Serilog": "9.0.0",
+          "Elastic.Ingest.Elasticsearch.CommonSchema": "9.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Serilog.Sinks.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "Elastic.Transport/0.10.0": {
+        "runtime": {
+          "lib/net8.0/Elastic.Transport.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.10.0.0"
+          }
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "runtime": {
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
+          }
+        }
+      },
+      "MassTransit/8.5.10": {
+        "dependencies": {
+          "MassTransit.Abstractions": "8.5.10"
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.dll": {
+            "assemblyVersion": "8.5.10.0",
+            "fileVersion": "8.5.10.0"
+          }
+        }
+      },
+      "MassTransit.Abstractions/8.5.10": {
+        "runtime": {
+          "lib/net10.0/MassTransit.Abstractions.dll": {
+            "assemblyVersion": "8.5.10.0",
+            "fileVersion": "8.5.10.0"
+          }
+        }
+      },
+      "MassTransit.RabbitMQ/8.5.10": {
+        "dependencies": {
+          "MassTransit": "8.5.10",
+          "RabbitMQ.Client": "7.2.1"
+        },
+        "runtime": {
+          "lib/net10.0/MassTransit.RabbitMqTransport.dll": {
+            "assemblyVersion": "8.5.10.0",
+            "fileVersion": "8.5.10.0"
           }
         }
       },
@@ -95,7 +214,7 @@
       },
       "Microsoft.AspNetCore.OpenApi/10.0.8": {
         "dependencies": {
-          "Microsoft.OpenApi": "2.0.0"
+          "Microsoft.OpenApi": "2.7.5"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.OpenApi.dll": {
@@ -665,11 +784,11 @@
           }
         }
       },
-      "Microsoft.OpenApi/2.0.0": {
+      "Microsoft.OpenApi/2.7.5": {
         "runtime": {
           "lib/net8.0/Microsoft.OpenApi.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.0.0.0"
+            "assemblyVersion": "2.7.5.0",
+            "fileVersion": "2.7.5.0"
           }
         }
       },
@@ -737,7 +856,7 @@
           "Serilog": "4.3.0",
           "Serilog.Extensions.Hosting": "10.0.0",
           "Serilog.Formatting.Compact": "3.0.0",
-          "Serilog.Settings.Configuration": "10.0.0",
+          "Serilog.Settings.Configuration": "10.0.1",
           "Serilog.Sinks.Console": "6.1.1",
           "Serilog.Sinks.Debug": "3.0.0",
           "Serilog.Sinks.File": "7.0.0"
@@ -746,6 +865,17 @@
           "lib/net10.0/Serilog.AspNetCore.dll": {
             "assemblyVersion": "10.0.0.0",
             "fileVersion": "10.0.0.0"
+          }
+        }
+      },
+      "Serilog.Enrichers.Environment/3.0.1": {
+        "dependencies": {
+          "Serilog": "4.3.0"
+        },
+        "runtime": {
+          "lib/net8.0/Serilog.Enrichers.Environment.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
           }
         }
       },
@@ -783,15 +913,15 @@
           }
         }
       },
-      "Serilog.Settings.Configuration/10.0.0": {
+      "Serilog.Settings.Configuration/10.0.1": {
         "dependencies": {
           "Microsoft.Extensions.DependencyModel": "10.0.9",
           "Serilog": "4.3.0"
         },
         "runtime": {
           "lib/net10.0/Serilog.Settings.Configuration.dll": {
-            "assemblyVersion": "10.0.0.0",
-            "fileVersion": "10.0.0.0"
+            "assemblyVersion": "10.0.1.0",
+            "fileVersion": "10.0.1.0"
           }
         }
       },
@@ -994,12 +1124,89 @@
       "path": "azure.identity/1.14.2",
       "hashPath": "azure.identity.1.14.2.nupkg.sha512"
     },
+    "Elastic.Channels/0.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8vRZXKUntTgsN6TbbOVnKkFbq7hy4vwEPm2GYqM1oXGpOprTOdIp/l0ie6LAb8hm+is9CPIywqNZdfOp7KU+YQ==",
+      "path": "elastic.channels/0.14.0",
+      "hashPath": "elastic.channels.0.14.0.nupkg.sha512"
+    },
+    "Elastic.CommonSchema/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5I7rbqLobJZY2cf9EratD2peUva31eyfSwuf8Qm8gM5ButP5F/NNzcUuvsuAleBQXmAJb55CLnMxA9oMGYHdsg==",
+      "path": "elastic.commonschema/9.0.0",
+      "hashPath": "elastic.commonschema.9.0.0.nupkg.sha512"
+    },
+    "Elastic.CommonSchema.Serilog/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5MF4qqoXRddo8YBzV+EbhSBqo6F8UIAbj28GVEyiobRt/MZRzE3ddYd6k51yYJ4ZJ4WMtdZk5Wv8o8YpqW51KA==",
+      "path": "elastic.commonschema.serilog/9.0.0",
+      "hashPath": "elastic.commonschema.serilog.9.0.0.nupkg.sha512"
+    },
+    "Elastic.Ingest.Elasticsearch/0.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+a1wTp7Z9ACzBlh1pt4r59HK3tpqimJGcbi5w4a/dMZ5/QlXJ6xj/yaSIQ6NgecQIUQVsibH0eFWGuwt2/rlTA==",
+      "path": "elastic.ingest.elasticsearch/0.14.0",
+      "hashPath": "elastic.ingest.elasticsearch.0.14.0.nupkg.sha512"
+    },
+    "Elastic.Ingest.Elasticsearch.CommonSchema/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TCmz6N/Vpspt9NxiFy2oWYqu4wc5UOAEqR7TZ3NNu/mLRfKx/0TUV3SXW+jIsacIsh/i5nb8JXRERwd/LbGpHg==",
+      "path": "elastic.ingest.elasticsearch.commonschema/9.0.0",
+      "hashPath": "elastic.ingest.elasticsearch.commonschema.9.0.0.nupkg.sha512"
+    },
+    "Elastic.Ingest.Transport/0.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XoBT9ub4imzF+KN14MWEVyS3O40teXQ4uPLkTL6XV6vZMbSjRvohg1/4B4YK0EBkDUu71xHLd6rupdwJXwYl8Q==",
+      "path": "elastic.ingest.transport/0.14.0",
+      "hashPath": "elastic.ingest.transport.0.14.0.nupkg.sha512"
+    },
+    "Elastic.Serilog.Sinks/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cxQIl06rGe+LeqUkJtGOpLzqn0XfUES3kCgeNhyVEvzCuvNCMXpyDTum+/q2r4fnvyx/0u+ynW59rW6lGtp79A==",
+      "path": "elastic.serilog.sinks/9.0.0",
+      "hashPath": "elastic.serilog.sinks.9.0.0.nupkg.sha512"
+    },
+    "Elastic.Transport/0.10.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xtEahhp8ZWj5T/uWbiHcodQrz3P/n1il/CFLzbpfk6ygKQTHn6RxDF16G4LiDqr3GrAleU6urOIdbWJ6+YDjpA==",
+      "path": "elastic.transport/0.10.0",
+      "hashPath": "elastic.transport.0.10.0.nupkg.sha512"
+    },
     "Humanizer.Core/2.14.1": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
+    },
+    "MassTransit/8.5.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TGi34UA8RftBIpYCHEdoIP5uSu2/pLWZRen4RUcg4CV1nr8MmCZMuFYjzvXXUyFcj0ZuRQxZZNhG7fB5/raSOg==",
+      "path": "masstransit/8.5.10",
+      "hashPath": "masstransit.8.5.10.nupkg.sha512"
+    },
+    "MassTransit.Abstractions/8.5.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nZnm2YNH+NcVwY6yC114sJy8J9LtKdFjfKUm/A5HfmzOlZ8ksjgHaPBg5XCG1VAqKDRDFnaudIcesVultKJD7g==",
+      "path": "masstransit.abstractions/8.5.10",
+      "hashPath": "masstransit.abstractions.8.5.10.nupkg.sha512"
+    },
+    "MassTransit.RabbitMQ/8.5.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5aQGpJpeqRhRv+htkXfi6MfWu0dj/4Lcf1c6h2J3tYZClupGklqB1ixlP3IRdZExrH9BI/60uYoxR+7pg3s1oQ==",
+      "path": "masstransit.rabbitmq/8.5.10",
+      "hashPath": "masstransit.rabbitmq.8.5.10.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication.JwtBearer/10.0.9": {
       "type": "package",
@@ -1204,12 +1411,12 @@
       "path": "microsoft.identitymodel.tokens/8.19.1",
       "hashPath": "microsoft.identitymodel.tokens.8.19.1.nupkg.sha512"
     },
-    "Microsoft.OpenApi/2.0.0": {
+    "Microsoft.OpenApi/2.7.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-GGYLfzV/G/ct80OZ45JxnWP7NvMX1BCugn/lX7TH5o0lcVaviavsLMTxmFV2AybXWjbi3h6FF1vgZiTK6PXndw==",
-      "path": "microsoft.openapi/2.0.0",
-      "hashPath": "microsoft.openapi.2.0.0.nupkg.sha512"
+      "sha512": "sha512-0FA67RSnRM4tcBKqiqVu/HPdZ9+QOKbmeRjxRUGTCjPU4C0bmUhd97Dso7Yild5P7nOV6GxJ2xrK0Kv/O9xp0w==",
+      "path": "microsoft.openapi/2.7.5",
+      "hashPath": "microsoft.openapi.2.7.5.nupkg.sha512"
     },
     "Microsoft.SqlServer.Server/1.0.0": {
       "type": "package",
@@ -1267,6 +1474,13 @@
       "path": "serilog.aspnetcore/10.0.0",
       "hashPath": "serilog.aspnetcore.10.0.0.nupkg.sha512"
     },
+    "Serilog.Enrichers.Environment/3.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9BqCE4C9FF+/rJb/CsQwe7oVf44xqkOvMwX//CUxvUR25lFL4tSS6iuxE5eW07quby1BAyAEP+vM6TWsnT3iqw==",
+      "path": "serilog.enrichers.environment/3.0.1",
+      "hashPath": "serilog.enrichers.environment.3.0.1.nupkg.sha512"
+    },
     "Serilog.Extensions.Hosting/10.0.0": {
       "type": "package",
       "serviceable": true,
@@ -1288,12 +1502,12 @@
       "path": "serilog.formatting.compact/3.0.0",
       "hashPath": "serilog.formatting.compact.3.0.0.nupkg.sha512"
     },
-    "Serilog.Settings.Configuration/10.0.0": {
+    "Serilog.Settings.Configuration/10.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-LNq+ibS1sbhTqPV1FIE69/9AJJbfaOhnaqkzcjFy95o+4U+STsta9mi97f1smgXsWYKICDeGUf8xUGzd/52/uA==",
-      "path": "serilog.settings.configuration/10.0.0",
-      "hashPath": "serilog.settings.configuration.10.0.0.nupkg.sha512"
+      "sha512": "sha512-ayFE7h66mqMqzwfPrzDCMbWU27FdNC2bkCG+jnkeHFZTBRh+yWdr4aa/2WuX7c8RmqxGPMW2UqoJ3fw9hK3QhA==",
+      "path": "serilog.settings.configuration/10.0.1",
+      "hashPath": "serilog.settings.configuration.10.0.1.nupkg.sha512"
     },
     "Serilog.Sinks.Console/6.1.1": {
       "type": "package",

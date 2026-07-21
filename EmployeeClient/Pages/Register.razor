@@ -42,7 +42,7 @@
 
     private async Task HandleRegister()
     {
-        var response =await Http.PostAsJsonAsync("api/auth/register", RegisterRequest);
+        var response =await Http.PostAsJsonAsync("/api/auth/register", RegisterRequest);
         if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("User Registered Successfully");

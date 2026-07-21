@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj": {}
+    "E:\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj": {}
   },
   "projects": {
-    "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
+    "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
+        "projectUniqueName": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
         "projectName": "EmployeeApp.Shared",
-        "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
-        "packagesPath": "C:\\Users\\311046\\.nuget\\packages\\",
-        "outputPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\obj\\",
+        "projectPath": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj",
+        "packagesPath": "C:\\Users\\reni_\\.nuget\\packages\\",
+        "outputPath": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\311046\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\reni_\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -67,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -345,20 +345,20 @@
         }
       }
     },
-    "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj": {
+    "E:\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
+        "projectUniqueName": "E:\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
         "projectName": "EmployeeClient",
-        "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
-        "packagesPath": "C:\\Users\\311046\\.nuget\\packages\\",
-        "outputPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeClient\\obj\\",
+        "projectPath": "E:\\Test\\EmployeeApp\\EmployeeClient\\EmployeeClient.csproj",
+        "packagesPath": "C:\\Users\\reni_\\.nuget\\packages\\",
+        "outputPath": "E:\\Test\\EmployeeApp\\EmployeeClient\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\311046\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\reni_\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -374,8 +374,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
-                "projectPath": "C:\\reni\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj"
+              "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj": {
+                "projectPath": "E:\\Test\\EmployeeApp\\EmployeeApp.Shared\\EmployeeApp.Shared.csproj"
               }
             }
           }
@@ -400,7 +400,7 @@
             "Microsoft.AspNetCore.App.Internal.Assets": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.9, )",
+              "version": "[10.0.10, )",
               "autoReferenced": true
             },
             "Microsoft.AspNetCore.Components.Authorization": {
@@ -419,13 +419,13 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.9, )",
+              "version": "[10.0.10, )",
               "autoReferenced": true
             },
             "Microsoft.NET.Sdk.WebAssembly.Pack": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.9, )",
+              "version": "[10.0.10, )",
               "autoReferenced": true
             }
           },
@@ -443,7 +443,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
-              "version": "[10.0.9, 10.0.9]"
+              "version": "[10.0.10, 10.0.10]"
             }
           ],
           "frameworkReferences": {
@@ -451,7 +451,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

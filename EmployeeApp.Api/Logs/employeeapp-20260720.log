@@ -1,0 +1,154 @@
+2026-07-20 22:23:11.589 +05:30 [ERR] An error occurred using the connection to database 'sprint3db' on server '.'.
+2026-07-20 22:23:11.652 +05:30 [ERR] An exception occurred while iterating over the results of a query for context type 'EmployeeApp.Api.Data.AppDbContext'.
+Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
+ ---> System.ComponentModel.Win32Exception (2): The system cannot find the file specified.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(IDbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+ClientConnectionId:00000000-0000-0000-0000-000000000000
+Error Number:2,State:0,Class:20
+Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
+ ---> System.ComponentModel.Win32Exception (2): The system cannot find the file specified.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(IDbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.SqlClient.ConnectionPool.WaitHandleDbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+ClientConnectionId:00000000-0000-0000-0000-000000000000
+Error Number:2,State:0,Class:20
+2026-07-20 22:23:11.671 +05:30 [INF] A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
+2026-07-20 22:23:59.305 +05:30 [INF] Configured endpoint employee.events.Queue, Consumer: EmployeeApp.Api.Messaging.EmployeeEventConsumer
+2026-07-20 22:23:59.670 +05:30 [INF] Now listening on: http://localhost:5070
+2026-07-20 22:23:59.674 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-20 22:23:59.676 +05:30 [INF] Hosting environment: Development
+2026-07-20 22:23:59.678 +05:30 [INF] Content root path: E:\Test\EmployeeApp\EmployeeApp.Api
+2026-07-20 22:24:00.053 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-20 22:24:04.112 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-20 22:24:04.158 +05:30 [INF] HTTP GET / responded 404 in 46.1920 ms
+2026-07-20 22:24:11.103 +05:30 [INF] HTTP GET /angular responded 200 in 20.5436 ms
+2026-07-20 22:24:11.221 +05:30 [INF] HTTP GET /angular/styles-JG7EAGFK.css responded 200 in 20.9699 ms
+2026-07-20 22:24:11.221 +05:30 [INF] HTTP GET /angular/main-R2VRMAV4.js responded 200 in 28.3779 ms
+2026-07-20 22:24:14.106 +05:30 [INF] HTTP GET /api/employees responded 401 in 2797.4698 ms
+2026-07-20 22:24:29.227 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 658.7413 ms
+2026-07-20 22:24:29.491 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-20 22:24:29.665 +05:30 [INF] HTTP GET /api/employees responded 200 in 395.1944 ms
+2026-07-20 22:29:00.111 +05:30 [INF] Usage Telemetry: {"id":"30310000-37bf-a570-15e3-08dee67f7e9a","created":"2026-07-20T22:23:59.2452819\u002B05:30","host":{"framework_version":"10.0.10","mass_transit_version":"8.5.10.0","operating_system_version":"Microsoft Windows NT 10.0.26200.0","time_zone_info":"(UTC\u002B05:30) Chennai, Kolkata, Mumbai, New Delhi","commit_hash":"62ab339afa3bac2e9b3fe1769d0d35d7e44778e9"},"bus":[{"created":"2026-07-20T22:23:59.2477824\u002B05:30","configured":"2026-07-20T22:23:59.5004966\u002B05:30","started":"2026-07-20T22:24:00.0504650\u002B05:30","name":"IBus","endpoints":[{"name":"employee.events.Queue","type":"RabbitMQ","prefetch_count":32,"consumer_count":1,"message_count":1},{"name":"_bus_","type":"RabbitMQ","prefetch_count":32}]}]}
+2026-07-20 22:29:20.925 +05:30 [INF] Application is shutting down...
+2026-07-20 22:29:21.056 +05:30 [INF] Bus stopped: "rabbitmq://localhost/"
+2026-07-20 22:29:34.429 +05:30 [INF] Configured endpoint employee.events.Queue, Consumer: EmployeeApp.Api.Messaging.EmployeeEventConsumer
+2026-07-20 22:29:34.858 +05:30 [INF] Now listening on: http://localhost:5070
+2026-07-20 22:29:34.862 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-20 22:29:34.865 +05:30 [INF] Hosting environment: Development
+2026-07-20 22:29:34.868 +05:30 [INF] Content root path: E:\Test\EmployeeApp\EmployeeApp.Api
+2026-07-20 22:29:35.153 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-20 22:29:37.929 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-20 22:29:37.971 +05:30 [INF] HTTP GET / responded 404 in 42.8507 ms
+2026-07-20 22:29:44.532 +05:30 [INF] HTTP GET /angular responded 200 in 19.8333 ms
+2026-07-20 22:29:44.625 +05:30 [INF] HTTP GET /angular/main-RMMY7VUV.js responded 200 in 20.8438 ms
+2026-07-20 22:29:44.648 +05:30 [INF] HTTP GET /angular/styles-JG7EAGFK.css responded 200 in 15.3355 ms
+2026-07-20 22:29:45.003 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-20 22:29:45.293 +05:30 [INF] HTTP GET /api/employees responded 200 in 573.6879 ms
+2026-07-20 22:30:10.315 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 375.0941 ms
+2026-07-20 22:30:10.366 +05:30 [INF] HTTP GET /api/employees responded 200 in 14.6501 ms
+2026-07-20 22:30:12.276 +05:30 [INF] HTTP GET /blazor responded 200 in 2.4951 ms
+2026-07-20 22:30:12.365 +05:30 [INF] HTTP GET /blazor/lib/bootstrap/dist/css/bootstrap.min.css responded 200 in 3.3910 ms
+2026-07-20 22:30:12.368 +05:30 [INF] HTTP GET /blazor/css/app.css responded 200 in 1.0028 ms
+2026-07-20 22:30:12.371 +05:30 [INF] HTTP GET /blazor/EmployeeClient.styles.css responded 200 in 0.7147 ms
+2026-07-20 22:30:12.371 +05:30 [INF] HTTP GET /blazor/_framework/blazor.webassembly.js responded 200 in 0.9661 ms
+2026-07-20 22:30:12.392 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.js responded 200 in 1.6319 ms
+2026-07-20 22:30:12.421 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.native.puryxhmhq9.js responded 200 in 1.4300 ms
+2026-07-20 22:30:12.422 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.runtime.web2r9gqbh.js responded 200 in 3.2015 ms
+2026-07-20 22:30:12.455 +05:30 [INF] HTTP GET /blazor/_framework/EmployeeApp.Shared.wst185jj1r.wasm responded 200 in 0.7152 ms
+2026-07-20 22:30:12.455 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.InteropServices.JavaScript.xs6yu76bks.wasm responded 200 in 0.7643 ms
+2026-07-20 22:30:12.461 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Authorization.jaiefy7q3e.wasm responded 200 in 1.7279 ms
+2026-07-20 22:30:12.462 +05:30 [INF] HTTP GET /blazor/_framework/EmployeeClient.nc3tjltdle.wasm responded 200 in 1.8964 ms
+2026-07-20 22:30:12.462 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.native.u31nt9bth6.wasm responded 200 in 41.4953 ms
+2026-07-20 22:30:12.477 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.23r44w5jxn.wasm responded 200 in 2.3281 ms
+2026-07-20 22:30:12.480 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.Authorization.ewu9kgvlj7.wasm responded 200 in 0.9167 ms
+2026-07-20 22:30:12.480 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.Forms.9beleyownf.wasm responded 200 in 1.1050 ms
+2026-07-20 22:30:12.492 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.Web.ang2z2m53x.wasm responded 200 in 1.6425 ms
+2026-07-20 22:30:12.492 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.WebAssembly.hpfrjszxz8.wasm responded 200 in 1.7086 ms
+2026-07-20 22:30:12.500 +05:30 [INF] HTTP GET /blazor/_framework/System.Private.CoreLib.5vpzr8wtwn.wasm responded 200 in 50.7733 ms
+2026-07-20 22:30:12.501 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Metadata.h5rkjprljp.wasm responded 200 in 1.2013 ms
+2026-07-20 22:30:12.502 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Configuration.Abstractions.4ascqjkgzo.wasm responded 200 in 0.9370 ms
+2026-07-20 22:30:12.508 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.yd1ay0fi8e.wasm responded 200 in 0.8230 ms
+2026-07-20 22:30:12.515 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Configuration.xnovko9l24.wasm responded 200 in 2.9658 ms
+2026-07-20 22:30:12.508 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Configuration.Json.iitlxos134.wasm responded 200 in 0.8038 ms
+2026-07-20 22:30:12.519 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Diagnostics.ea9jzo65mq.wasm responded 200 in 0.9276 ms
+2026-07-20 22:30:12.523 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.DependencyInjection.pdq83eroqe.wasm responded 200 in 1.2003 ms
+2026-07-20 22:30:12.527 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Diagnostics.Abstractions.xnj79tmbo0.wasm responded 200 in 0.9577 ms
+2026-07-20 22:30:12.531 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Logging.oc34nf9cyn.wasm responded 200 in 1.2322 ms
+2026-07-20 22:30:12.537 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Options.sbfmpxwipp.wasm responded 200 in 1.8966 ms
+2026-07-20 22:30:12.540 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Logging.Abstractions.y6p42azzz6.wasm responded 200 in 0.7948 ms
+2026-07-20 22:30:12.544 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Primitives.072etlnfwu.wasm responded 200 in 0.9227 ms
+2026-07-20 22:30:12.547 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.JSInterop.WebAssembly.cbdj3f5i9f.wasm responded 200 in 0.6651 ms
+2026-07-20 22:30:12.552 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.JSInterop.n4v9gvxr8f.wasm responded 200 in 0.9694 ms
+2026-07-20 22:30:12.555 +05:30 [INF] HTTP GET /blazor/_framework/System.cvgusyd4es.wasm responded 200 in 0.6300 ms
+2026-07-20 22:30:12.558 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.Concurrent.77phykr4at.wasm responded 200 in 0.6118 ms
+2026-07-20 22:30:12.562 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.Immutable.44gfb5acbj.wasm responded 200 in 1.0696 ms
+2026-07-20 22:30:12.566 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.NonGeneric.2eqo4m9rgn.wasm responded 200 in 0.9781 ms
+2026-07-20 22:30:12.570 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.Specialized.lb8f9a52bp.wasm responded 200 in 0.8515 ms
+2026-07-20 22:30:12.574 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.zck3bxb7o1.wasm responded 200 in 0.8244 ms
+2026-07-20 22:30:12.576 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.Annotations.boq88iozmf.wasm responded 200 in 0.6360 ms
+2026-07-20 22:30:12.581 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.Primitives.w76hqofemw.wasm responded 200 in 0.6357 ms
+2026-07-20 22:30:12.586 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.TypeConverter.1b526pm9er.wasm responded 200 in 1.4100 ms
+2026-07-20 22:30:12.589 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.j8t4mlscoa.wasm responded 200 in 0.7847 ms
+2026-07-20 22:30:12.593 +05:30 [INF] HTTP GET /blazor/_framework/System.Console.lsjpvcu2bc.wasm responded 200 in 0.7084 ms
+2026-07-20 22:30:12.598 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.DiagnosticSource.1vtrwwltdl.wasm responded 200 in 1.6191 ms
+2026-07-20 22:30:12.604 +05:30 [INF] HTTP GET /blazor/_framework/System.IO.Pipelines.uznrqn6wwr.wasm responded 200 in 1.4007 ms
+2026-07-20 22:30:12.611 +05:30 [INF] HTTP GET /blazor/_framework/System.Linq.9acgbvbguy.wasm responded 200 in 1.2093 ms
+2026-07-20 22:30:12.620 +05:30 [INF] HTTP GET /blazor/_framework/System.Linq.Expressions.rfryxgikk4.wasm responded 200 in 4.0132 ms
+2026-07-20 22:30:12.622 +05:30 [INF] HTTP GET /blazor/_framework/System.Memory.dmchb5mcb4.wasm responded 200 in 0.9073 ms
+2026-07-20 22:30:12.628 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Http.Json.0pe15ioa3d.wasm responded 200 in 1.0906 ms
+2026-07-20 22:30:12.634 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Http.0fdnycze5k.wasm responded 200 in 2.2001 ms
+2026-07-20 22:30:12.640 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Primitives.lomeqtjib9.wasm responded 200 in 0.9453 ms
+2026-07-20 22:30:12.644 +05:30 [INF] HTTP GET /blazor/_framework/System.ObjectModel.71xt2g2ecm.wasm responded 200 in 0.8462 ms
+2026-07-20 22:30:12.650 +05:30 [INF] HTTP GET /blazor/_framework/System.Private.Uri.i8mqnwuuk1.wasm responded 200 in 2.0974 ms
+2026-07-20 22:30:12.655 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.Serialization.Primitives.mdgerqqoz0.wasm responded 200 in 1.3904 ms
+2026-07-20 22:30:12.661 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.rusd5p4ddi.wasm responded 200 in 1.1743 ms
+2026-07-20 22:30:12.666 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.Claims.m1jxgkx449.wasm responded 200 in 1.1137 ms
+2026-07-20 22:30:12.671 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.Cryptography.2zkzja4hey.wasm responded 200 in 1.0350 ms
+2026-07-20 22:30:12.675 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.Encodings.Web.9u1rhssy5s.wasm responded 200 in 0.8752 ms
+2026-07-20 22:30:12.681 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.Json.nbcixh40hj.wasm responded 200 in 3.1612 ms
+2026-07-20 22:30:12.684 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.RegularExpressions.u6eavgzi6w.wasm responded 200 in 0.9175 ms
+2026-07-20 22:30:12.692 +05:30 [INF] HTTP GET /blazor/_framework/icudt_EFIGS.tptq2av103.dat responded 200 in 3.7751 ms
+2026-07-20 22:30:15.643 +05:30 [INF] HTTP GET /angular responded 200 in 2.1067 ms
+2026-07-20 22:30:15.712 +05:30 [INF] HTTP GET /angular/main-RMMY7VUV.js responded 304 in 0.7820 ms
+2026-07-20 22:30:15.713 +05:30 [INF] HTTP GET /angular/styles-JG7EAGFK.css responded 304 in 1.0364 ms
+2026-07-20 22:30:15.808 +05:30 [INF] HTTP GET /api/employees responded 200 in 34.4823 ms
+2026-07-20 22:30:36.418 +05:30 [INF] Application is shutting down...
+2026-07-20 22:30:36.556 +05:30 [INF] Bus stopped: "rabbitmq://localhost/"
